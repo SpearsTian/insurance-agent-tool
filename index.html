@@ -1,0 +1,2482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保险代理人智能工作台 V6.10</title>
+<style>
+:root {
+  --blue: #1a56db; --blue-bg: #e8f0fe; --blue-dark: #1e3a5f;
+  --green: #059669; --green-bg: #ecfdf5;
+  --amber: #d97706; --amber-bg: #fffbeb;
+  --pink: #db2777; --pink-bg: #fce7f3;
+  --red: #dc2626; --red-bg: #fee2e2;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-300: #d1d5db; --gray-400:#9ca3af; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f0f2f5; color: var(--gray-900); line-height: 1.6;
+}
+
+/* Header */
+.app-header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 100%);
+  color: #fff; padding: 12px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.app-header h1 { font-size: 1.15rem; font-weight: 700; }
+.app-header .badge { font-size: .72rem; background: rgba(255,255,255,.15); padding: 4px 12px; border-radius: 20px; }
+.app-header .demo-note { font-size: .68rem; color: rgba(255,255,255,.6); margin-left: 10px; }
+
+/* Tabs — priority ordered */
+.tab-nav {
+  display: flex; background: #fff; border-bottom: 1px solid var(--gray-200);
+  padding: 0 16px; gap: 0; overflow-x: auto; position: sticky; top: 0; z-index: 50;
+}
+.tab-btn {
+  padding: 13px 18px; border: none; background: none; cursor: pointer;
+  font-size: .88rem; font-weight: 600; color: var(--gray-500);
+  border-bottom: 3px solid transparent; white-space: nowrap; transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.tab-btn:hover { color: var(--gray-900); }
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+.tab-btn .ic { font-size: 1.05rem; }
+.tab-btn .dot { background: var(--red); color:#fff; font-size:.62rem; font-weight:700; border-radius:10px; padding:1px 6px; margin-left:2px; }
+
+.tab-content { display: none; padding: 20px 24px; max-width: 1240px; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+/* Cards & panels */
+.panel { background: #fff; border-radius: var(--radius); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.panel-header {
+  padding: 14px 18px; border-bottom: 1px solid var(--gray-100);
+  font-weight: 700; font-size: .95rem; display: flex; align-items: center; gap: 8px;
+}
+.panel-body { padding: 16px 18px; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.flex-row { display: flex; gap: 16px; align-items: flex-start; }
+.flex-1 { flex: 1; }
+.w-300 { width: 300px; flex-shrink: 0; }
+
+/* Buttons */
+.btn {
+  padding: 8px 16px; border: 1px solid var(--gray-300); border-radius: 8px;
+  background: #fff; cursor: pointer; font-size: .85rem; font-weight: 600; transition: all .15s;
+}
+.btn:hover { background: var(--gray-50); }
+.btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.btn-primary:hover { background: #1648b8; }
+.btn-success { background: var(--green); color: #fff; border-color: var(--green); }
+.btn-wa { background:#25d366; color:#fff; border-color:#25d366; }
+.btn-disabled { background: var(--gray-100); color: var(--gray-500); border-color: var(--gray-200); cursor: default; }
+.btn-block { width:100%; text-align:center; justify-content:center; }
+
+/* Tags */
+.tag { display: inline-block; font-size: .7rem; padding: 2px 10px; border-radius: 12px; font-weight: 600; }
+.tag-blue { background: var(--blue-bg); color: var(--blue); }
+.tag-green { background: var(--green-bg); color: var(--green); }
+.tag-amber { background: var(--amber-bg); color: var(--amber); }
+.tag-red { background: var(--red-bg); color: var(--red); }
+.tag-gray { background: var(--gray-100); color: var(--gray-500); }
+.tag-vip { background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+
+/* ════════ HOME / TODAY ════════ */
+.home-greeting {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 100%);
+  color:#fff; border-radius: var(--radius); padding: 22px 24px; margin-bottom: 18px;
+  box-shadow: 0 4px 14px rgba(26,86,219,.25);
+}
+.home-greeting .hg-date { font-size:.82rem; opacity:.85; }
+.home-greeting .hg-hello { font-size:1.5rem; font-weight:700; margin:4px 0 6px; }
+.home-greeting .hg-summary { font-size:.95rem; opacity:.95; }
+.home-greeting .hg-summary b { background:rgba(255,255,255,.2); padding:1px 8px; border-radius:6px; }
+
+.action-block { margin-bottom: 16px; }
+.action-block-head {
+  display:flex; align-items:center; gap:8px; font-weight:700; font-size:1rem; margin-bottom:10px;
+}
+.action-block-head .ab-count { font-size:.75rem; font-weight:700; padding:2px 9px; border-radius:12px; }
+.ab-appt .ab-count { background:var(--blue-bg); color:var(--blue); }
+.ab-renew .ab-count { background:var(--amber-bg); color:var(--amber); }
+.ab-lead .ab-count { background:var(--green-bg); color:var(--green); }
+
+.todo-tile {
+  background:#fff; border-radius:var(--radius); padding:14px 16px; margin-bottom:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06); cursor:pointer; transition:all .15s;
+  border-left:4px solid var(--gray-200); display:flex; align-items:center; gap:14px;
+}
+.todo-tile:hover { box-shadow:0 4px 12px rgba(0,0,0,.1); transform:translateY(-1px); }
+.todo-tile.t-appt { border-left-color:var(--blue); }
+.todo-tile.t-renew { border-left-color:var(--amber); }
+.todo-tile.t-lead { border-left-color:var(--green); }
+.todo-avatar {
+  width:48px; height:48px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+  background:var(--blue-bg);
+}
+.todo-main { flex:1; min-width:0; }
+.todo-main .tm-name { font-weight:700; font-size:.95rem; }
+.todo-main .tm-sub { font-size:.8rem; color:var(--gray-500); margin-top:2px; }
+.todo-main .tm-action { font-size:.78rem; color:var(--blue); margin-top:3px; font-weight:600; }
+.todo-time { text-align:right; flex-shrink:0; }
+.todo-time .tt-big { font-weight:700; font-size:1rem; }
+.todo-time .tt-small { font-size:.72rem; color:var(--gray-500); }
+.todo-cta { font-size:.75rem; color:var(--gray-400); margin-left:6px; }
+
+/* ════════ PREP CARD (备课卡) ════════ */
+.prep-wrap { max-width: 420px; margin: 0 auto; }
+.prep-selector { margin-bottom:14px; }
+.prep-card {
+  background:#fff; border-radius:18px; overflow:hidden;
+  box-shadow:0 8px 30px rgba(0,0,0,.12); border:1px solid var(--gray-200);
+}
+.prep-hero {
+  background: linear-gradient(135deg,#1e3a5f,#1a56db); color:#fff; padding:22px 20px 18px;
+  text-align:center; position:relative;
+}
+.prep-avatar {
+  width:76px; height:76px; border-radius:50%; background:rgba(255,255,255,.18);
+  display:flex; align-items:center; justify-content:center; font-size:2.4rem; margin:0 auto 10px;
+  border:3px solid rgba(255,255,255,.35);
+}
+.prep-name { font-size:1.35rem; font-weight:700; }
+.prep-meta { font-size:.82rem; opacity:.9; margin-top:3px; }
+.prep-tags { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+.prep-tags span { font-size:.7rem; background:rgba(255,255,255,.2); padding:3px 10px; border-radius:12px; }
+.prep-body { padding:18px 18px 10px; }
+.prep-row { border-radius:12px; padding:13px 14px; margin-bottom:12px; }
+.prep-row .pr-label { font-size:.72rem; font-weight:700; letter-spacing:.5px; margin-bottom:5px; display:flex; align-items:center; gap:5px; }
+.prep-row .pr-text { font-size:.9rem; line-height:1.55; }
+.pr-last { background:var(--gray-50); }
+.pr-last .pr-label { color:var(--gray-500); }
+.pr-focus { background:var(--blue-bg); }
+.pr-focus .pr-label { color:var(--blue); }
+.pr-open { background:var(--green-bg); }
+.pr-open .pr-label { color:var(--green); }
+.pr-open .pr-text { font-style:italic; }
+.prep-risk {
+  background:var(--amber-bg); border:1px solid #fcd34d; border-radius:12px; padding:12px 14px; margin-bottom:12px;
+}
+.prep-risk .pr-label { font-size:.72rem; font-weight:700; color:var(--amber); margin-bottom:4px; }
+.prep-risk .pr-num { font-size:1.05rem; font-weight:700; color:var(--red); }
+.prep-actions { display:flex; gap:8px; padding:6px 18px 18px; }
+.prep-actions .btn { flex:1; padding:11px 6px; font-size:.82rem; }
+.prep-foot { display:flex; gap:8px; padding:0 18px 18px; }
+.prep-foot .btn { flex:1; font-size:.8rem; }
+
+/* coverage mini bars */
+.cov-dim { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.cov-dim-name { width: 56px; font-size: .8rem; font-weight: 600; }
+.cov-dim-track { flex: 1; height: 8px; background: var(--gray-100); border-radius: 4px; overflow: hidden; }
+.cov-dim-fill { height: 100%; border-radius: 4px; transition:width .5s; }
+.cov-dim-val { width: 40px; font-size: .75rem; text-align: right; }
+
+/* ════════ MEETING ASSIST (见面辅助) ════════ */
+.obj-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.obj-card {
+  border:1px solid var(--gray-200); border-radius:12px; overflow:hidden; transition:all .15s;
+}
+.obj-card:hover { box-shadow:0 3px 10px rgba(0,0,0,.08); border-color:var(--blue); }
+.obj-trigger {
+  background:var(--gray-50); padding:10px 14px; font-weight:700; font-size:.85rem;
+  display:flex; align-items:center; gap:6px; border-bottom:1px solid var(--gray-100);
+}
+.obj-trigger .ot-q { color:var(--red); }
+.obj-resp { padding:12px 14px; font-size:.84rem; color:var(--gray-700); line-height:1.6; }
+.obj-resp .or-tip { display:block; margin-top:6px; font-size:.72rem; color:var(--blue); font-weight:600; }
+
+.ai-speech-result {
+  background: var(--blue-bg); padding: 12px; border-radius: 8px; font-size: .86rem; color: var(--gray-700);
+  border-left: 3px solid var(--blue); margin-top: 8px; white-space:pre-wrap;
+}
+.ai-speech-box textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px; font-family: inherit; font-size: .85rem; margin-bottom: 6px; }
+
+.faq-item { border: 1px solid var(--gray-200); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+.faq-q { font-weight: 700; font-size: .85rem; margin-bottom: 6px; }
+.faq-a { font-size: .82rem; color: var(--gray-700); }
+.visit-item { background:var(--gray-50); border-left:3px solid var(--blue); border-radius:6px; padding:10px 12px; margin-bottom:8px; }
+
+/* roleplay */
+.roleplay-chat { max-height: 300px; overflow-y: auto; margin-bottom: 12px; padding:4px; }
+.roleplay-msg { display: flex; gap: 8px; margin-bottom: 10px; }
+.roleplay-msg.agent { justify-content: flex-end; }
+.roleplay-msg .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 14px; font-size: .85rem; }
+.roleplay-msg.customer .msg-bubble { background: var(--gray-100); border-bottom-left-radius: 3px; }
+.roleplay-msg.agent .msg-bubble { background: var(--blue); color: #fff; border-bottom-right-radius: 3px; }
+.roleplay-msg .msg-label { font-size: .65rem; color: var(--gray-500); margin-bottom: 2px; }
+.roleplay-msg.agent .msg-label { text-align: right; }
+.coaching-box { background:#fef3c7; border:1px solid #fcd34d; border-radius:8px; padding:12px; font-size:.82rem; margin-bottom:12px; }
+
+/* ════════ CLIENT FILE / PLAN ════════ */
+.client-card {
+  padding: 12px 14px; border: 1px solid var(--gray-200); border-radius: 10px;
+  cursor: pointer; transition: all .15s; margin-bottom: 8px;
+}
+.client-card:hover { border-color: var(--blue); background: var(--blue-bg); }
+.client-card.selected { border-color: var(--blue); background: var(--blue-bg); border-width: 2px; }
+.client-card .name { font-weight: 700; font-size: .92rem; }
+.client-card .meta { font-size: .78rem; color: var(--gray-500); margin-top: 3px; }
+.client-card .tags { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+.client-card .tags span { font-size: .68rem; padding: 2px 8px; border-radius: 10px; background: var(--gray-100); }
+.health-dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; }
+.health-dot.green{background:var(--green);} .health-dot.yellow{background:var(--amber);} .health-dot.red{background:var(--red);}
+.search-box { width:100%; padding:10px 14px; border:1px solid var(--gray-200); border-radius:8px; font-size:.9rem; margin-bottom:12px; }
+.scroll-y { max-height: 320px; overflow-y: auto; }
+/* 侧栏整列 sticky（align-self:flex-start 保持自然高度，containing block=高的 flex-row，故可全程跟随） */
+.side-col { align-self: flex-start; position: -webkit-sticky; position: sticky; top: 60px; z-index: 5; }
+.sticky-nav { /* 侧栏内导航面板，sticky 由 .side-col 整列负责 */ }
+@media (max-width: 900px) { .side-col { position: static; } }
+
+/* adequacy */
+.adq-row { padding:12px 0; border-bottom:1px solid var(--gray-100); }
+.adq-row:last-child { border-bottom:none; }
+.adq-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
+.adq-name { font-weight:700; font-size:.9rem; }
+.adq-pct { font-size:.8rem; font-weight:700; }
+.adq-track { height:9px; background:var(--gray-100); border-radius:5px; overflow:hidden; }
+.adq-fill { height:100%; border-radius:5px; transition:width .6s; }
+.adq-nums { font-size:.78rem; color:var(--gray-500); margin-top:5px; }
+.adq-nums b { color:var(--gray-900); }
+.adq-loss { font-size:.78rem; color:var(--red); margin-top:3px; }
+
+/* rec card */
+.rec-card { border:1px solid var(--gray-200); border-radius:12px; padding:15px; margin-bottom:12px; display:flex; gap:13px; align-items:flex-start; position:relative; }
+.rec-score { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1rem; flex-shrink:0; color:#fff; }
+.rec-score.high { background:var(--green); } .rec-score.medium { background:var(--amber); }
+.rec-body { flex:1; }
+.rec-body .rec-name { font-weight:700; margin-bottom:4px; }
+.rec-body .rec-summary { font-size:.85rem; color:var(--gray-700); margin-bottom:6px; }
+.rec-loss { font-size:.8rem; color:var(--red); background:var(--red-bg); padding:6px 10px; border-radius:6px; margin:6px 0; }
+.rec-peers { font-size:.78rem; color:var(--green); background:var(--green-bg); padding:6px 10px; border-radius:6px; margin:6px 0; }
+.rec-pitch { font-size:.8rem; color:var(--gray-500); font-style:italic; border-left:3px solid var(--gray-200); padding-left:10px; }
+.rec-badge { position:absolute; top:-1px; right:-1px; background:var(--green); color:#fff; font-size:.65rem; font-weight:600; padding:3px 10px; border-radius:0 12px 0 8px; }
+
+.priority-box { background:var(--gray-50); border-radius:8px; padding:14px; border-left:4px solid var(--blue); margin-bottom:14px; }
+.priority-box .p-item { font-size:.82rem; margin-bottom:5px; display:flex; align-items:center; gap:7px; }
+.priority-box .p-num { width:18px; height:18px; border-radius:50%; background:var(--blue); color:#fff; font-size:.65rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+.compare-table { width:100%; font-size:.82rem; border-collapse:collapse; margin:10px 0; }
+.compare-table th, .compare-table td { padding:8px 10px; border:1px solid var(--gray-200); }
+.compare-table th { background:var(--gray-50); text-align:left; }
+.proposal-edit { width:100%; min-height:220px; padding:12px; border:1px solid var(--gray-200); border-radius:8px; font-family:inherit; font-size:.85rem; line-height:1.7; }
+
+/* view toggle */
+.view-toggle { display:inline-flex; background:var(--gray-100); border-radius:8px; padding:3px; gap:2px; }
+.view-toggle button { border:none; background:none; padding:6px 16px; border-radius:6px; font-size:.82rem; font-weight:600; cursor:pointer; color:var(--gray-500); }
+.view-toggle button.active { background:#fff; color:var(--blue); box-shadow:0 1px 3px rgba(0,0,0,.1); }
+
+/* CLIENT-FACING VIEW */
+.cv-wrap { background:linear-gradient(160deg,#f8fafc,#eef2ff); border-radius:16px; padding:26px; }
+.cv-title { text-align:center; margin-bottom:18px; }
+.cv-title h2 { font-size:1.5rem; color:var(--blue-dark); }
+.cv-title p { color:var(--gray-500); font-size:.9rem; margin-top:4px; }
+.cv-gap { background:#fff; border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.cv-gap h3 { font-size:1.05rem; margin-bottom:14px; color:var(--gray-900); }
+.cv-bigbar { margin-bottom:14px; }
+.cv-bigbar .cb-top { display:flex; justify-content:space-between; font-size:.95rem; font-weight:700; margin-bottom:6px; }
+.cv-bigbar .cb-track { height:16px; background:var(--gray-100); border-radius:8px; overflow:hidden; }
+.cv-bigbar .cb-fill { height:100%; border-radius:8px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px; color:#fff; font-size:.7rem; font-weight:700; }
+.cv-prod { background:#fff; border-radius:14px; padding:0; margin-bottom:14px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.cv-prod-head { background:var(--blue); color:#fff; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+.cv-prod-head .cph-name { font-size:1.1rem; font-weight:700; }
+.cv-prod-head .cph-cat { font-size:.75rem; background:rgba(255,255,255,.22); padding:3px 10px; border-radius:12px; }
+.cv-prod-body { padding:16px 18px; }
+.cv-spec { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.cv-spec .cs-cell { text-align:center; background:var(--gray-50); border-radius:10px; padding:12px; }
+.cv-spec .cs-val { font-size:1.35rem; font-weight:700; color:var(--blue-dark); }
+.cv-spec .cs-lbl { font-size:.75rem; color:var(--gray-500); margin-top:3px; }
+.cv-highlight { background:var(--green-bg); border-radius:10px; padding:12px 14px; font-size:.9rem; color:#065f46; }
+.cv-highlight b { color:var(--green); }
+.cv-perday { text-align:center; font-size:.95rem; color:var(--gray-700); margin-top:10px; }
+.cv-perday b { font-size:1.3rem; color:var(--amber); }
+
+/* ════════ PERFORMANCE ════════ */
+.metric-card { text-align: center; padding: 16px; }
+.metric-card .value { font-size: 1.7rem; font-weight: 700; }
+.metric-card .label { font-size: .8rem; color: var(--gray-500); margin-top: 4px; }
+.kpi-row { display:flex; gap:12px; margin-bottom:12px; align-items:center; cursor:pointer; }
+.kpi-label { width:90px; font-size:.85rem; font-weight:600; flex-shrink:0; }
+.kpi-track { flex:1; height:24px; background:var(--gray-100); border-radius:12px; overflow:hidden; }
+.kpi-fill { height:100%; border-radius:12px; display:flex; align-items:center; justify-content:flex-end; padding-right:10px; font-size:.75rem; color:#fff; font-weight:600; }
+.kpi-val { width:110px; text-align:right; font-size:.82rem; flex-shrink:0; }
+.pipeline-stage { background:var(--gray-50); border-radius:10px; padding:12px; min-height:120px; }
+.pipeline-stage h4 { font-size:.8rem; color:var(--gray-500); margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; }
+.lead-card { background:#fff; border:1px solid var(--gray-200); border-radius:8px; padding:10px 12px; margin-bottom:8px; font-size:.85rem; cursor:pointer; transition:all .15s; }
+.lead-card:hover { border-color:var(--blue); box-shadow:0 2px 4px rgba(0,0,0,.06); }
+.lead-card .lead-name { font-weight:700; }
+.lead-card .lead-meta { font-size:.75rem; color:var(--gray-500); margin-top:2px; }
+.renew-alert { background:var(--amber-bg); border:1px solid #fcd34d; border-radius:8px; padding:14px; font-size:.85rem; margin-bottom:16px; }
+.ml-info { display:inline-block; width:15px; height:15px; border-radius:50%; background:var(--gray-300); color:#fff; font-size:.62rem; text-align:center; line-height:15px; cursor:help; position:relative; }
+.ml-info:hover::after { content:attr(data-tip); position:absolute; bottom:20px; left:50%; transform:translateX(-50%); background:var(--gray-900); color:#fff; font-size:.72rem; padding:6px 10px; border-radius:6px; z-index:10; width:230px; text-align:left; line-height:1.4; }
+
+/* underwriting */
+.uw-policy-card { background:#fff; border:1px solid var(--gray-200); border-radius:12px; padding:18px; margin-bottom:14px; }
+.uw-policy-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.uw-policy-title { font-weight:700; font-size:.92rem; }
+.uw-policy-subtitle { font-size:.78rem; color:var(--gray-500); margin-top:2px; }
+.uw-policy-status { font-size:.72rem; padding:4px 12px; border-radius:12px; font-weight:600; }
+.uw-policy-status.under-review { background:var(--amber-bg); color:var(--amber); }
+.uw-policy-status.docs-pending { background:#fef3c7; color:#92400e; }
+.uw-policy-status.quote-ready { background:var(--green-bg); color:var(--green); }
+.uw-timeline { display:flex; align-items:center; margin:14px 0; }
+.uw-timeline-step { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+.uw-timeline-circle { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; border:2px solid var(--gray-200); background:#fff; color:var(--gray-300); }
+.uw-timeline-circle.done { background:var(--green); border-color:var(--green); color:#fff; }
+.uw-timeline-circle.current { background:#fff; border-color:var(--amber); color:var(--amber); animation:pulse 2s infinite; }
+.uw-timeline-label { font-size:.68rem; color:var(--gray-500); text-align:center; }
+.uw-timeline-line { flex:1; height:2px; background:var(--gray-200); margin:0 4px 20px; }
+.uw-timeline-line.done { background:var(--green); }
+.uw-action-note { background:var(--amber-bg); padding:10px 14px; border-radius:6px; font-size:.82rem; margin-top:10px; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(217,119,6,.3)} 50%{box-shadow:0 0 0 6px rgba(217,119,6,0)} }
+
+/* OCR */
+.ocr-upload-area { border:2px dashed var(--gray-300); border-radius:8px; padding:14px; text-align:center; cursor:pointer; transition:all .15s; margin-bottom:10px; }
+.ocr-upload-area:hover { border-color:var(--blue); background:var(--blue-bg); }
+.ocr-upload-area.processing { border-color:var(--blue); background:var(--blue-bg); cursor:default; }
+.ocr-progress-wrap { margin:10px 0; display:none; }
+.ocr-progress-wrap.show { display:block; }
+.ocr-progress-bar { height:6px; background:var(--gray-100); border-radius:3px; overflow:hidden; }
+.ocr-progress-fill { height:100%; background:var(--blue); border-radius:3px; width:0%; transition:width .3s; }
+
+/* Modal */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:100; align-items:center; justify-content:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:#fff; border-radius:14px; padding:22px; max-width:560px; width:92%; max-height:86vh; overflow-y:auto; }
+.modal h3 { margin-bottom:14px; }
+.modal textarea { width:100%; min-height:110px; border:1px solid var(--gray-200); border-radius:8px; padding:10px; font-size:.85rem; resize:vertical; font-family:inherit; }
+.channel-tabs { display:flex; gap:4px; margin-bottom:10px; }
+.channel-tab { padding:6px 14px; border-radius:6px; border:1px solid var(--gray-200); background:#fff; cursor:pointer; font-size:.82rem; font-weight:600; }
+.channel-tab.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+
+/* Toast */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--gray-900); color:#fff; padding:12px 24px; border-radius:8px; font-size:.85rem; z-index:200; opacity:0; transition:all .3s; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* loading + stream */
+.loading { text-align:center; padding:20px; color:var(--gray-500); }
+.loading::after { content:'...'; animation:dots 1s steps(3,end) infinite; }
+@keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+.gen-steps { font-size:.82rem; color:var(--gray-500); margin:10px 0; }
+.gen-step { display:flex; align-items:center; gap:8px; margin-bottom:6px; transition:all .3s; opacity:.4; }
+.gen-step.active { opacity:1; color:var(--blue); font-weight:600; }
+.gen-step.done { opacity:1; color:var(--green); }
+.gen-step .gs-ic { width:18px; }
+.stream-area { white-space:pre-wrap; padding:16px; border:1px solid var(--gray-200); border-radius:8px; min-height:200px; font-size:.86rem; line-height:1.8; background:#fff; }
+.stream-area.typing { border-color:var(--blue); }
+@keyframes flashDone { 0%{background:#fff;} 35%{background:var(--green-bg);} 100%{background:#fff;} }
+.stream-area.done-flash { animation:flashDone .9s ease; }
+.cursor-blink::after { content:'▋'; animation:blink 1s steps(1) infinite; color:var(--blue); }
+@keyframes blink { 50%{opacity:0;} }
+
+@media print {
+  body > * { display:none !important; }
+  #print-area { display:block !important; position:static !important; }
+  #print-area * { display:revert !important; visibility:visible !important; }
+  body { background:#fff; }
+}
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+  .flex-row { flex-direction:column; }
+  .w-300 { width:100%; }
+  .obj-grid { grid-template-columns:1fr; }
+  .cv-spec { grid-template-columns:1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .tab-content { padding:14px; }
+  .tab-btn { padding:11px 12px; font-size:.8rem; }
+  .prep-actions { flex-wrap:wrap; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <h1>保险代理人智能工作台</h1>
+    <span class="badge">V6.10 · Demo</span>
+    <span class="demo-note">数据为演示用途 · 真实部署对接 AIA CRM 及各市场核保系统</span>
+  </div>
+  <div style="font-size:.72rem;opacity:.75;" id="aiServerStatus">AI: 检测中...</div>
+</div>
+
+<nav class="tab-nav" id="tabNav">
+  <button class="tab-btn active" data-tab="home"><span class="ic">🏠</span>今日<span class="dot" id="homeDot">0</span></button>
+  <button class="tab-btn" data-tab="prep"><span class="ic">📇</span>客户备课卡</button>
+  <button class="tab-btn" data-tab="client"><span class="ic">📋</span>客户画像与方案推荐</button>
+  <button class="tab-btn" data-tab="meeting"><span class="ic">💬</span>见面辅助</button>
+  <button class="tab-btn" data-tab="perf"><span class="ic">📊</span>业绩</button>
+</nav>
+
+<!-- TAB: HOME -->
+<div class="tab-content active" id="tab-home"></div>
+
+<!-- TAB: PREP CARD -->
+<div class="tab-content" id="tab-prep"></div>
+
+<!-- TAB: MEETING ASSIST -->
+<div class="tab-content" id="tab-meeting"></div>
+
+<!-- TAB: CLIENT & PLAN -->
+<div class="tab-content" id="tab-client">
+  <div class="flex-row">
+    <div class="w-300 side-col">
+      <div class="panel sticky-nav">
+        <div class="panel-header">📑 页内导航</div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn btn-block" onclick="scrollToSection('secProfile')">👤 360°画像</button>
+          <button class="btn btn-block" onclick="scrollToSection('secAdequacy')">🛡️ 保障充足度</button>
+          <button class="btn btn-block" onclick="scrollToSection('secRec')">🎯 产品推荐</button>
+          <button class="btn btn-block" onclick="scrollToSection('secProposal')">📄 方案 / 建议书</button>
+          <button class="btn btn-block" onclick="scrollToSection('secBenchmark')">📈 同业对标</button>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px;">
+        <div class="panel-header">📋 客户列表 <span style="font-weight:400;color:var(--gray-500);margin-left:auto;" id="clientCount">4人</span></div>
+        <div class="panel-body">
+          <input class="search-box" placeholder="搜索姓名/标签..." id="clientSearch" oninput="renderClientList(this.value)">
+          <div class="scroll-y" id="clientList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="flex-1" id="clientMain">
+      <div class="panel" style="text-align:center;padding:60px;color:var(--gray-500);">
+        <div style="font-size:3rem;margin-bottom:12px;">👈</div>
+        <p>选择左侧客户，查看完整画像、保障充足度分析与方案</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: PERFORMANCE -->
+<div class="tab-content" id="tab-perf"></div>
+
+<!-- SEND MODAL -->
+<div class="modal-overlay" id="sendModal">
+  <div class="modal">
+    <h3>💬 发送给客户</h3>
+    <div class="channel-tabs">
+      <button class="channel-tab active" onclick="switchChannel('whatsapp')" id="ch-wa">📱 WhatsApp</button>
+      <button class="channel-tab" onclick="switchChannel('wechat')" id="ch-wc">💚 微信/Line</button>
+      <button class="channel-tab" onclick="switchChannel('email')" id="ch-em">📧 邮件</button>
+    </div>
+    <textarea id="sendMessage" placeholder="消息内容..." style="min-height:160px;"></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+      <button class="btn" onclick="closeModal('sendModal')">取消</button>
+      <button class="btn" onclick="copySendContent()">📋 复制</button>
+      <button class="btn btn-primary" onclick="simulateSend()">✅ 发送</button>
+    </div>
+  </div>
+</div>
+
+<!-- VISIT MODAL -->
+<div class="modal-overlay" id="visitModal">
+  <div class="modal">
+    <h3>📝 拜访记录 <span class="tag tag-amber">✨ AI提取</span></h3>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:.85rem;font-weight:600;">拜访日期</label>
+      <input type="date" id="visitDate" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:6px;margin-top:4px;">
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:.85rem;font-weight:600;">拜访摘要</label>
+      <textarea id="visitSummary" placeholder="记录本次拜访的关键内容..."></textarea>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:.85rem;font-weight:600;">客户意向</label>
+      <select id="visitIntent" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:6px;">
+        <option>高意向 - 准备购买</option>
+        <option>中意向 - 需要考虑</option>
+        <option>低意向 - 暂时观望</option>
+        <option>无意向 - 拒绝</option>
+      </select>
+    </div>
+    <button class="btn" onclick="analyzeVisit()" id="btnAnalyzeVisit">🤖 AI分析拜访记录</button>
+    <div id="visitAnalysisResult" style="display:none;margin:12px 0;">
+      <div style="background:var(--blue-bg);padding:12px;border-radius:8px;font-size:.85rem;">
+        <div id="vaLifeEvents" style="margin-bottom:6px;"></div>
+        <div id="vaConcerns" style="margin-bottom:6px;"></div>
+        <div id="vaSignals" style="margin-bottom:6px;"></div>
+        <div id="vaHook" style="background:#fff;padding:8px;border-radius:6px;border-left:3px solid var(--blue);"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <button class="btn" onclick="closeModal('visitModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveVisit()">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEAD DETAIL MODAL -->
+<div class="modal-overlay" id="leadDetailModal">
+  <div class="modal" style="max-width:520px;">
+    <h3 id="leadDetailTitle">客户详情</h3>
+    <div id="leadDetailContent"></div>
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn btn-primary" onclick="closeModal('leadDetailModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA — 4 个现有客户，丰富了备课卡 / 财务 / 医疗细节字段
+// ═══════════════════════════════════════════════════════════════
+const AGENT_NAME = 'Ahmad';
+// 实时使用系统当天日期（演示数据中的"今天"会自动对齐到真实今天）
+const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+function fmtISO(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function isoOffset(n) { return fmtISO(new Date(TODAY.getTime() + n * 86400000)); }
+const TODAY_ISO = fmtISO(TODAY);
+
+const CLIENTS = [
+  {
+    id: 'C001', name: 'Siti Rahman', age: 38, avatar: '👩🏻',
+    dependents: '2 children (8 & 5)', occupation: 'Employed (Salaried)',
+    hasMortgage: false, tags: ['年轻家庭', '中收入', '教育规划'],
+    lifeStage: '家庭成长期',
+    phone: '+60 12-345-6781', email: 'siti.rahman@email.com', whatsapp: '+60123456781',
+    financial: { incomeRange: 'RM 4,000 - 5,000', assets: ['存款', '公积金'], liabilities: ['无'], budget: 'RM 300-500/月' },
+    coverageDetails: [
+      { type: '寿险', coverage: 'RM 200,000', insurer: 'AIA', expiryDate: '2038-06', source: 'CRM同步' },
+      { type: '车险', coverage: 'RM 50,000', insurer: 'AIA', expiryDate: '2027-01', source: 'CRM同步' }
+    ],
+    medicalPlan: null,
+    coverageScores: { life: 35, medical: 0, critical: 0, accident: 0, savings: 0, pension: 0 },
+    lifeEvents: [
+      { icon: '👶', name: '新生儿/子女出生', date: '2018-03', recommend: '教育金储蓄险、儿童医疗险' },
+      { icon: '🎓', name: '子女升学/出国', date: '2027-09', recommend: '教育金、留学医疗险' }
+    ],
+    healthScore: { retentionRisk: 'low', churnRisk: 'green', lastContact: 7, upsellPotential: 78, renewalWillingness: 85 },
+    renewalDate: '2027-01-15',
+    assetInfo: '月收入 RM 4,500，月支出约 RM 2,800，月结余 RM 1,700。无房贷。',
+    nextMeeting: { date: TODAY_ISO, time: '10:30', place: '客户公司楼下咖啡厅', purpose: '教育金方案讲解' },
+    briefing: {
+      lastTalk: '上次聊到两个孩子的教育金，客户很心动，但担心每月预算压力——她说"现在每个月已经很紧了"。',
+      thisFocus: '带 3 档教育金方案对比，主推每月 RM 300 起的 EduStar，强调"越早存越轻松"。顺带提儿童医疗卡。',
+      opener: '"Siti，上次您说每月预算有点紧，我特地准备了一个每天大约 RM 10 的方案——一杯 Teh Tarik 的钱，就能帮 Aisyah 和 Adam 锁定大学基金。"'
+    }
+  },
+  {
+    id: 'C002', name: 'Budi Hartono', age: 45, avatar: '👨🏽',
+    dependents: '3 children (15/12/9), 配偶', occupation: 'Business Owner',
+    hasMortgage: true, tags: ['高净值', '企业主', '家庭支柱'],
+    lifeStage: '家庭成长期',
+    phone: '+60 13-456-7890', email: 'budi.h@biz.com', whatsapp: '+60134567890',
+    financial: { incomeRange: 'RM 8,000 - 12,000', assets: ['自有房产', '生意股权', '投资账户', '存款'], liabilities: ['房贷 RM 450K', '生意贷款 RM 200K'], budget: 'RM 800-1,500/月' },
+    coverageDetails: [
+      { type: '寿险', coverage: 'RM 500,000', insurer: 'AIA', expiryDate: '2040-03', source: 'CRM同步' },
+      { type: '医疗险', coverage: '家庭计划', insurer: 'AIA', expiryDate: isoOffset(66), source: 'CRM同步' }
+    ],
+    medicalPlan: { dailyLimit: 1200, annualLimit: 150000 },
+    coverageScores: { life: 45, medical: 60, critical: 0, accident: 0, savings: 0, pension: 10 },
+    lifeEvents: [
+      { icon: '🏠', name: '购置房产/贷款', date: '2020-05', recommend: '定期寿险（覆盖贷款余额）' },
+      { icon: '📈', name: '生意扩张/新增贷款', date: '2026-03', recommend: '企业主保障方案、关键人保险' }
+    ],
+    healthScore: { retentionRisk: 'medium', churnRisk: 'yellow', lastContact: 21, upsellPotential: 92, renewalWillingness: 70 },
+    renewalDate: isoOffset(66),
+    assetInfo: '月收入 RM 8,200，房贷月供 RM 2,100，月结余约 RM 3,500。企业年利润约 RM 120K。',
+    nextMeeting: { date: TODAY_ISO, time: '15:00', place: 'Budi 的办公室', purpose: '重疾价格异议 + 企业主关键人保障' },
+    briefing: {
+      lastTalk: '讨论了重疾险，客户觉得保费偏高、想再考虑——他原话是"一个月几百块，还是有点肉痛"。',
+      thisFocus: '跟进重疾价格异议，带"月缴"方案把总价拆小；同时带企业主关键人保险，他三个孩子+房贷+生意贷款，缺口巨大。',
+      opener: '"Budi，上次您说价格是顾虑，我帮您算了一下——RM 300K 重疾保障每天不到 RM 16，比您办公室那台咖啡机每天磨的豆子还便宜，但确诊就一次赔 30 万。"'
+    }
+  },
+  {
+    id: 'C003', name: 'Maria Santos', age: 29, avatar: '👩🏽',
+    dependents: '无', occupation: 'Employed (Salaried)',
+    hasMortgage: false, tags: ['单身', '事业上升期', '健康关注'],
+    lifeStage: '单身期',
+    phone: '+60 14-567-8901', email: 'maria.santos@email.com', whatsapp: '+60145678901',
+    financial: { incomeRange: 'RM 3,000 - 3,500', assets: ['存款', '公积金'], liabilities: ['无'], budget: 'RM 200-400/月' },
+    coverageDetails: [ { type: '医疗险', coverage: '个人计划', insurer: 'AIA', expiryDate: isoOffset(23), source: 'CRM同步' } ],
+    medicalPlan: { dailyLimit: 200, annualLimit: 50000 },
+    coverageScores: { life: 0, medical: 50, critical: 0, accident: 0, savings: 0, pension: 0 },
+    lifeEvents: [ { icon: '💼', name: '换工作/失去雇主保障', date: '2026-01', recommend: '个人医疗险补充' } ],
+    healthScore: { retentionRisk: 'low', churnRisk: 'green', lastContact: 14, upsellPotential: 55, renewalWillingness: 90 },
+    renewalDate: isoOffset(23),
+    assetInfo: '月收入 RM 3,200，月支出约 RM 2,200，月结余 RM 1,000。无负债。刚升职。',
+    nextMeeting: null,
+    briefing: {
+      lastTalk: '刚换了工作、升了职，担心新公司团险保障没旧公司好——提到"换工作那段空窗期有点慌"。',
+      thisFocus: '趁年轻身体好、费率低，先把个人医疗险补足，并锁定一份重疾，强调"现在买最便宜，以后只会更贵"。',
+      opener: '"Maria 恭喜升职！趁现在身体好、费率最低，我们把保障锁定下来最划算——同样的重疾保障，30 岁买和 40 岁买，保费差快一倍。"'
+    }
+  },
+  {
+    id: 'C004', name: 'Tan Wei Ming', age: 52, avatar: '👨🏻',
+    dependents: '1 child (大学), 配偶', occupation: 'Employed (Manager)',
+    hasMortgage: true, tags: ['准退休', '财富传承', '高净值'],
+    lifeStage: '退休准备期',
+    phone: '+60 15-678-9012', email: 'tan.wm@email.com', whatsapp: '+60156789012',
+    financial: { incomeRange: 'RM 6,000 - 7,500', assets: ['自有房产', '投资基金', '公积金', '存款'], liabilities: ['房贷 RM 180K'], budget: 'RM 600-900/月' },
+    coverageDetails: [
+      { type: '寿险', coverage: 'RM 300,000', insurer: 'AIA', expiryDate: '2035-08', source: 'CRM同步' },
+      { type: '医疗险', coverage: '家庭计划', insurer: 'AIA', expiryDate: isoOffset(13), source: 'CRM同步' },
+      { type: '储蓄险', coverage: 'RM 100,000', insurer: 'AIA', expiryDate: '2030-04', source: 'CRM同步' }
+    ],
+    medicalPlan: { dailyLimit: 1000, annualLimit: 120000 },
+    coverageScores: { life: 40, medical: 60, critical: 0, accident: 0, savings: 25, pension: 5 },
+    lifeEvents: [
+      { icon: '🎓', name: '子女升学/出国', date: '2026-04', recommend: '教育金、留学医疗险' },
+      { icon: '🏖️', name: '退休临近（55岁+）', date: '2029-01', recommend: '年金险、医疗险终身化' }
+    ],
+    healthScore: { retentionRisk: 'high', churnRisk: 'red', lastContact: 45, upsellPotential: 85, renewalWillingness: 60 },
+    renewalDate: isoOffset(13),
+    assetInfo: '月收入 RM 6,800，房贷月供 RM 1,500，月结余约 RM 2,800。退休目标：60岁。',
+    nextMeeting: { date: isoOffset(1), time: '10:00', place: '电话回访', purpose: '医疗险续期 + 退休年金' },
+    briefing: {
+      lastTalk: '关注退休年金和孩子的留学金——但已经 45 天没联系了，关系有点冷，续保意愿在下降。',
+      thisFocus: '医疗卡 6/18 就要续期（最紧急），借续期重建联系；顺势带退休年金规划，他离 60 岁退休只剩 8 年。',
+      opener: '"陈先生，好久没向您问好了！您的医疗卡下个月 18 号要续期，我顺手帮您把退休这块也理了一下——离您 60 岁退休刚好 8 年，是时候把年金锁起来了。"'
+    }
+  }
+];
+
+const PRODUCT_KB = [
+  { id: "AIA-CI-001", name: "AIA Critical Illness Cover", category: "health", categoryLabel: "健康险", minAge: 18, maxAge: 65, minSumAssured: 50000, maxSumAssured: 1000000, premiumRate: 0.0015, waitingPeriod: "90天", claimSpeed: "24小时", tags: ["重疾", "确诊即赔", "覆盖36种疾病"] },
+  { id: "AIA-MED-001", name: "AIA MedShield Family", category: "health", categoryLabel: "健康险", minAge: 0, maxAge: 70, annualLimit: 150000, premiumMonthly: { middle: 180, upper: 280, affluent: 420 }, tags: ["医疗", "家庭计划", "无限次住院"] },
+  { id: "AIA-LIFE-001", name: "AIA Term Life 20", category: "life", categoryLabel: "寿险", minAge: 18, maxAge: 60, minSumAssured: 100000, maxSumAssured: 5000000, premiumRate: 0.0008, term: "20年定期", tags: ["寿险", "定期", "高保额低保费"] },
+  { id: "AIA-SAV-001", name: "AIA Wealth Builder", category: "savings", categoryLabel: "储蓄险", minAge: 18, maxAge: 55, minPremium: 500, maxPremium: 10000, guaranteedReturn: "3.5%", tags: ["储蓄", "分红", "教育金"] },
+  { id: "AIA-EDU-001", name: "AIA EduStar", category: "savings", categoryLabel: "储蓄险", minAge: 0, maxAge: 50, minPremium: 200, maxPremium: 5000, guaranteedReturn: "3.8%", maturityBenefit: "RM 50,000 - 200,000", tags: ["教育金", "子女教育", "定期给付", "18岁/21岁领取"] },
+  { id: "AIA-EDU-002", name: "AIA Smart Scholar", category: "savings", categoryLabel: "储蓄险", minAge: 18, maxAge: 45, minPremium: 300, maxPremium: 8000, guaranteedReturn: "4.0%", maturityBenefit: "RM 80,000 - 300,000", tags: ["教育金", "留学规划", "海外教育", "长期积累"] },
+  { id: "AIA-ANN-001", name: "AIA RetireSure Annuity", category: "savings", categoryLabel: "储蓄险", minAge: 40, maxAge: 65, monthlyPayout: "RM 2,000起", tags: ["年金", "退休", "月月领取"] },
+  { id: "AIA-PA-001", name: "AIA Personal Accident Rider", category: "accident", categoryLabel: "意外险", minAge: 18, maxAge: 65, premiumMonthly: 25, tags: ["意外", "附加险", "伤残赔付"] },
+  { id: "AIA-BIZ-001", name: "AIA Business Continuation Plan", category: "business", categoryLabel: "企业险", minAge: 25, maxAge: 60, tags: ["企业主", "关键人", "业务保障"] }
+];
+
+// Pipeline = 代理人管理的整个客户池：4 个在管客户（clientId 关联）+ 总部线索 + 转介绍
+const PIPELINE = [
+  { stage:'待联系', leads:[
+    { name:'Ahmad Faizal', source:'总部推送', score:'高', value:2800, reason:'孩子刚出生，寿险缺口明显', history:['2026-05-10 总部推送线索','2026-05-12 电话未接通'] },
+    { name:'Lin Mei Ling', source:'存量加保', score:'高', value:1500, reason:'教育金缺口', history:['2026-05-08 咨询教育金产品'] },
+    { name:'Wong Kar Wai', source:'总部推送', score:'中', value:1100, reason:'医疗险升级线索', history:['2026-05-25 总部推送，尚未触达'] }
+  ]},
+  { stage:'已约访', leads:[
+    { name:'Siti Rahman', clientId:'C001', source:'在管客户', score:'高', value:1600, reason:'教育金加保，今天 10:30 面谈', history:['2026-05-28 上次拜访：讨论教育金，担心预算', isoOffset(0)+' 今日预约 10:30'] },
+    { name:'Chen Zhi Qiang', source:'总部推送', score:'中', value:1200, reason:'重疾保额不足', history:['2026-05-15 首次面谈，客户对保费有顾虑'] }
+  ]},
+  { stage:'方案中', leads:[
+    { name:'Budi Hartono', clientId:'C002', source:'在管客户', score:'高', value:2800, reason:'重疾价格异议 + 企业主关键人保障', history:['2026-05-14 上次拜访：重疾觉得贵', isoOffset(0)+' 今日预约 15:00 跟进异议'] },
+    { name:'Rohana Binti', source:'存量加保', score:'高', value:2200, reason:'家庭住院升级', history:['2026-05-05 客户有意升级家庭医疗计划','2026-05-18 发送方案，等待反馈'] },
+    { name:'David Lim', source:'转介绍', score:'中', value:900, reason:'首次配置保险（Siti 转介绍）', history:['2026-05-20 转介绍来源：Siti Rahman'] }
+  ]},
+  { stage:'议价/成交', leads:[
+    { name:'Tan Wei Ming', clientId:'C004', source:'在管客户', score:'高', value:2400, reason:'医疗续期(14天内) + 退休年金', history:['2026-04-20 上次拜访：关注退休年金','2026-06-18 医疗卡续期'] },
+    { name:'Maria Santos', clientId:'C003', source:'在管客户', score:'中', value:1300, reason:'医疗续期(24天内) + 重疾趁年轻锁费率', history:['2026-05-21 上次拜访：换工作担心保障空窗','2026-06-28 医疗续期'] },
+    { name:'Nurul Huda', source:'存量加保', score:'高', value:1800, reason:'养老规划', history:['2026-05-01 客户关注退休年金','2026-05-22 方案讨论，月保费希望控制在 RM 500 内'] }
+  ]}
+];
+
+// 历史拜访记录种子数据（按客户）— 用于"查看历史拜访"入口
+const VISIT_HISTORY = {
+  C001: [
+    { date:'2026-05-28', summary:'讨论两个孩子的教育金，客户很心动但担心每月预算压力。', intent:'中意向 - 需要考虑' },
+    { date:'2026-04-15', summary:'年度保单回顾，确认车险与寿险有效，提及孩子明年升小学。', intent:'低意向 - 暂时观望' }
+  ],
+  C002: [
+    { date:'2026-05-14', summary:'介绍重疾险，客户觉得保费偏高想再考虑；提到生意在扩张、新增贷款。', intent:'中意向 - 需要考虑' },
+    { date:'2026-03-20', summary:'家庭医疗计划续保沟通，客户满意，顺带聊到三个孩子的保障。', intent:'高意向 - 准备购买' }
+  ],
+  C003: [
+    { date:'2026-05-21', summary:'客户刚换工作升职，担心新公司团险不如旧公司，对个人医疗险有兴趣。', intent:'高意向 - 准备购买' }
+  ],
+  C004: [
+    { date:'2026-04-20', summary:'关注退休年金和孩子留学金，但表示需和太太商量；关系略冷。', intent:'中意向 - 需要考虑' },
+    { date:'2026-02-10', summary:'医疗卡使用咨询，提醒年中续期；客户对终身医疗化有兴趣。', intent:'低意向 - 暂时观望' }
+  ]
+};
+
+const ALL_LIFE_EVENTS = [
+  { icon: '👶', name: '新生儿/子女出生', recommend: '教育金储蓄险、儿童医疗险' },
+  { icon: '💍', name: '结婚', recommend: '家庭保障提升、联合寿险' },
+  { icon: '🏠', name: '购置房产/贷款', recommend: '定期寿险（覆盖贷款余额）' },
+  { icon: '🎓', name: '子女升学/出国', recommend: '教育金、留学医疗险' },
+  { icon: '👴', name: '父母年迈/重病', recommend: '长期护理险、医疗险升级' },
+  { icon: '💼', name: '换工作/失去雇主保障', recommend: '个人医疗险补充' },
+  { icon: '🏖️', name: '退休临近（55岁+）', recommend: '年金险、医疗险终身化' },
+  { icon: '📈', name: '生意扩张/新增贷款', recommend: '企业主保障方案' }
+];
+
+const FAQ_TEMPLATES = {
+  health: [
+    { q: '重疾险和医疗险有什么区别？', a: '医疗险报销实际医疗费用；重疾险一旦确诊即赔付一笔钱（不需凭单据），可用于收入损失、康复费用或家庭支出，两者互补不可替代。' },
+    { q: '保费会随年龄增加吗？', a: '是的，年龄越大保费越高。现在购买锁定当前费率，是性价比最高的时机。' },
+    { q: '理赔时需要什么材料？', a: '主要是医院诊断书和相关检查报告。AIA支持线上理赔，文件上传后最快24小时审核完成。' },
+    { q: '等待期是多久？', a: '重疾险通常有90天等待期，意外险无等待期，医疗险视具体产品而定。' },
+    { q: '我已有公司团险，还需要个人保险吗？', a: '团险随工作变动而变化，且保额通常偏低。个人保险提供持续稳定的保障，两者建议结合。' }
+  ],
+  life: [
+    { q: '定期寿险和终身寿险有什么区别？', a: '定期寿险保障特定期限，保费低、保额高，适合房贷覆盖和子女成长期；终身寿险保障终身，兼具储蓄功能。有房贷优先配定期寿险。' },
+    { q: '保额多少才够用？', a: '建议保额 = 未还房贷余额 + 10年家庭生活费 + 子女教育金，确保家人在10年内生活质量不受影响。' },
+    { q: '如果健康状况不佳还能投保吗？', a: '视情况而定，可能需要加费、除外或延期。建议如实告知，避免理赔纠纷。' },
+    { q: '受益人可以更改吗？', a: '可以，随时联系代理人或通过AIA客户门户修改。' },
+    { q: '如果断缴保费会怎样？', a: '有30天宽限期，期内出险仍可理赔。超过则保单中止，需复效才能恢复保障。' }
+  ],
+  savings: [
+    { q: '储蓄险和投资有什么区别？', a: '储蓄险有保底收益和保险保障，风险低；投资可能更高回报但伴随更高风险。两者建议搭配。' },
+    { q: '可以提前取钱吗？', a: '可以部分提取保单价值，但可能影响保障和最终收益。' },
+    { q: '分红是不确定的吗？', a: '是的，取决于公司实际投资表现，但AIA历年分红实现率表现良好。' },
+    { q: '孩子的教育金什么时候开始准备最合适？', a: '越早越好。0岁开始利用复利，每月只需较少金额就能达标。' },
+    { q: '退休年金从什么时候开始领取？', a: '通常60岁或65岁开始，可月领或年领，取决于产品设计。' }
+  ],
+  default: [
+    { q: '买保险前需要体检吗？', a: '视年龄和保额而定。一般低保额不需要，高保额或特定年龄段可能需要。' },
+    { q: 'AIA的服务优势是什么？', a: 'AIA拥有东南亚最大的代理人网络，重疾理赔最快24小时，并提供AIA Vitality健康奖励计划。' },
+    { q: '如何选择适合自己的保险产品？', a: '建议先评估家庭保障缺口和财务目标，再按优先级逐步配置。我们可做免费需求分析。' },
+    { q: '保费可以抵税吗？', a: '在马来西亚，个人寿险和教育保险保费可享税务减免，具体额度请咨询税务顾问。' },
+    { q: '如果移居其他国家，保单还有效吗？', a: '大多数AIA保单移居后仍有效，但某些保障范围可能受限，建议提前告知。' }
+  ]
+};
+
+// 见面"偷看"话术卡 — 客户常见戒心 → 即时应答
+const OBJECTION_CARDS = [
+  { trigger:'太贵了 / 保费有点高', resp:'我完全理解。我们换个算法：这份保障每天约 RM 16，比一杯咖啡还少，却能在确诊重疾时一次性赔 RM 300K，让您安心治疗、不动用积蓄和孩子的教育金。', tip:'把"月/年总价"拆成"每天一杯咖啡"' },
+  { trigger:'我已经有公司团险了', resp:'团险很好，但它跟着工作走——换工作或退休就没了，而且保额通常偏低。个人保障是您自己的，保证续保、终身有效，两者刚好互补，不是二选一。', tip:'强调团险"随工作消失"的风险' },
+  { trigger:'我再考虑一下 / 过段时间', resp:'当然，这是大事值得慎重。只提醒一点：保费按投保年龄锁定，晚一年费率就涨一档，万一这期间身体出状况就可能买不到了。我先帮您把方案和当前费率留着？', tip:'制造"费率/健康"的时间紧迫感' },
+  { trigger:'我要比较其他公司', resp:'非常应该比！比的时候盯紧三件事：理赔速度（AIA 重疾 24 小时）、医疗年限额（我们 RM 150K vs 行业 RM 80K）、有没有 Vitality 健康回馈。我把对比表发您，比完再决定。', tip:'给客户一把"按我们优势设计"的尺子' },
+  { trigger:'保险都是骗人的 / 不太信任', resp:'有这种顾虑很正常。其实理赔有没有保障，关键看条款写得清不清楚。我可以把保障范围和除外责任一条条跟您讲明白，白纸黑字，您看明白了再决定也不迟。', tip:'用"逐条讲条款"化解戒心' },
+  { trigger:'等我有钱了再买', resp:'其实保险正是为"万一现在出事"准备的。等真有钱往往是几年后，那时费率更高、身体也未必允许。现在每月一点点，先把这份安心锁定，等宽裕了再加保。', tip:'拆解"以后再买"的隐藏成本' },
+  { trigger:'我要回去和太太/先生商量', resp:'应该的，这本来就是为全家做的决定。要不这样，我把方案做成一页纸、连同每天多少钱都写清楚，您直接拿回去给太太看，有问题随时 WhatsApp 我。', tip:'递"可直接转交家人"的一页纸' },
+  { trigger:'我还年轻，用不上', resp:'年轻正是最大的本钱——同样的重疾保障，30 岁买比 40 岁买便宜快一半，而且现在身体好、核保最容易。趁年轻锁定，是把便宜占在前面。', tip:'把"年轻"翻译成"费率优势"' }
+];
+
+const ROLEPLAY_SCENARIOS = {
+  price: ['保费确实不低，我考虑一下。', '这个价格超出了我的预算。', '我再看看其他公司的报价。'],
+  comparison: ['A公司给我的报价比你们便宜20%。', '我朋友买的另一家保险更划算。', '我需要时间比较一下。'],
+  delay: ['过两个月我再联系你。', '年底发了奖金再说。', '我现在太忙了，过段时间吧。'],
+  coverage: ['我已经有公司买的团险了。', '我五年前买过了。', '我爸妈给我买过保险。'],
+  trust: ['你刚入行不久吧？', 'AIA的理赔真的靠谱吗？', '我要跟我老公/老婆商量一下。']
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let state = {
+  activeTab: 'home',
+  selectedClientId: null,
+  prepClientId: null,
+  meetingClientId: null,
+  lastRecommendations: null, lastProposal: '', lastClientForRec: null,
+  activeChannel: 'whatsapp', roleplayRound: 0, roleplayMessages: [],
+  triggeredEvent: null, currentGaps: null,
+  proposalGenerated: false, proposalStale: false, activeProducts: null,
+  planView: 'agent', // 'agent' | 'client'
+  plans: {}, // clientId -> { recs, activeProducts }：全应用唯一的方案数据源，备课卡/见面辅助/客户与方案共享
+  scheduled: [] // 安排的跟进 {name, clientId, date, purpose}
+};
+
+// ─── 方案数据源（单一真相，跨页同步）─────────────────────────
+function buildClientPlan(c) {
+  const recs = computeRecommendations(c);
+  state.plans[c.id] = { recs, activeProducts: recs.map((_, i) => i), proposal: '', proposalGenerated: false, proposalStale: false, checkedEvents: [] };
+  return state.plans[c.id];
+}
+function ensureClientPlan(c) {
+  if (!state.plans[c.id]) buildClientPlan(c);
+  return state.plans[c.id];
+}
+// 把某客户的方案设为"当前活动方案"，所有全局状态都从该方案恢复（含建议书），避免串客户
+function syncActivePlan(c) {
+  const p = state.plans[c.id]; if (!p) return p;
+  state.lastRecommendations = p.recs; state.lastClientForRec = c; state.activeProducts = p.activeProducts;
+  state.lastProposal = p.proposal || ''; state.proposalGenerated = !!p.proposalGenerated; state.proposalStale = !!p.proposalStale;
+  return p;
+}
+function persistPlan(c) {
+  if (!c || !state.plans[c.id]) return;
+  const p = state.plans[c.id];
+  p.recs = state.lastRecommendations; p.activeProducts = state.activeProducts;
+  p.proposal = state.lastProposal; p.proposalGenerated = state.proposalGenerated; p.proposalStale = state.proposalStale;
+}
+// 当前可见（未移除）的推荐
+function planVisibleRecs(c) {
+  const p = state.plans[c.id]; if (!p) return [];
+  return (p.activeProducts || p.recs.map((_, i) => i)).map(i => p.recs[i]).filter(Boolean);
+}
+// 已"加入方案"的推荐；若一个都没加，回退到可见推荐（用于话术速查）
+function planSelectedOrVisible(c) {
+  const vis = planVisibleRecs(c);
+  const sel = vis.filter(r => r.selected);
+  return sel.length ? sel : vis;
+}
+// 仅"加入方案"的推荐 = 最终方案（用于建议书 / 话术 / 充足度投影）
+function planAppliedRecs(c) { return planVisibleRecs(c).filter(r => r.selected); }
+function planSelected(c) { return planAppliedRecs(c); }
+
+// ═══════════════════════════════════════════════════════════════
+// LLM — 保持不变（智谱 GLM-4-Flash，前端直连）
+// ═══════════════════════════════════════════════════════════════
+const API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+const API_KEY = 'df429b58f86a4280a5864a1594991126.pvNJ6ZG7OnPOoFuF';
+
+async function callLLM(systemPrompt, userContent, maxTokens = 1024) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + API_KEY },
+    body: JSON.stringify({ model: 'glm-4-flash', messages: [ { role: 'system', content: systemPrompt }, { role: 'user', content: userContent } ], max_tokens: maxTokens, temperature: 0.7 })
+  });
+  if (!resp.ok) throw new Error('LLM API error ' + resp.status);
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+async function callLLMStream(systemPrompt, userContent, onToken, maxTokens = 1024) {
+  const resp = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + API_KEY },
+    body: JSON.stringify({ model: 'glm-4-flash', messages: [ { role: 'system', content: systemPrompt }, { role: 'user', content: userContent } ], max_tokens: maxTokens, temperature: 0.7, stream: true })
+  });
+  if (!resp.ok) throw new Error('LLM API error ' + resp.status);
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || !trimmed.startsWith('data: ')) continue;
+      const data = trimmed.slice(6);
+      if (data === '[DONE]') return;
+      try { const json = JSON.parse(data); const token = json.choices?.[0]?.delta?.content || ''; if (token) onToken(token); } catch (e) {}
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAB NAVIGATION（保持基本切换机制）
+// ═══════════════════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  state.activeTab = tabId;
+  if (tabId === 'home') renderHome();
+  if (tabId === 'prep') renderPrep();
+  if (tabId === 'meeting') renderMeeting();
+  if (tabId === 'client') renderClientTab();
+  if (tabId === 'perf') initPerfTab();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MATH HELPERS — 更真实的保险业务逻辑
+// ═══════════════════════════════════════════════════════════════
+function parseMoney(s) {
+  if (!s) return 0;
+  const m = String(s).match(/RM\s*([\d,\.]+)\s*([KkMm]?)/);
+  if (!m) { const n = String(s).replace(/[^0-9]/g, ''); return n ? parseInt(n) : 0; }
+  let v = parseFloat(m[1].replace(/,/g, ''));
+  if (/k/i.test(m[2])) v *= 1000;
+  if (/m/i.test(m[2])) v *= 1000000;
+  return Math.round(v);
+}
+function clientIncome(c) {
+  const nums = (c.financial.incomeRange.match(/[\d,]+/g) || []).map(n => parseInt(n.replace(/,/g, '')));
+  if (nums.length >= 2) return Math.round((nums[0] + nums[1]) / 2);
+  return nums[0] || 4000;
+}
+function clientMortgage(c) {
+  const l = (c.financial.liabilities || []).find(x => x.includes('房贷'));
+  return l ? parseMoney(l) : 0;
+}
+function childCount(c) {
+  const m = c.dependents.match(/(\d+)\s*child/);
+  if (m) return parseInt(m[1]);
+  return /child/.test(c.dependents) ? 1 : 0;
+}
+function daysUntil(dateStr) {
+  if (!dateStr) return 9999;
+  return Math.ceil((new Date(dateStr) - TODAY) / (1000 * 60 * 60 * 24));
+}
+function fmtRM(n) { return 'RM ' + Math.round(n).toLocaleString(); }
+
+// 保障充足度 — "够不够"，不只是"有没有"
+// 马来西亚私立医院日均 RM 1,500-3,000；重疾建议保额 = 年收入×3-5倍；
+// 寿险 = 房贷余额 + 10年生活费 + 子女教育金
+// 把一条推荐换算成它能补到的保额（用于充足度规划投影）
+function recCoverAmount(r) {
+  if (typeof r.coverAmount === 'number') return r.coverAmount; // 跟随用户调整的保额
+  return parseMoney(r.suggestedSumAssured);
+}
+// computeAdequacy(c, projRecs)：projRecs 为"已加入方案"的推荐，用于计算规划后的投影充足度
+function computeAdequacy(c, projRecs) {
+  projRecs = projRecs || [];
+  const income = clientIncome(c);
+  const annual = income * 12;
+  const rows = [];
+  const sumBy = (pred) => projRecs.filter(pred).reduce((s, r) => s + recCoverAmount(r), 0);
+
+  // 寿险
+  const lifeCov = c.coverageDetails.find(d => d.type === '寿险');
+  const lifeNow = lifeCov ? parseMoney(lifeCov.coverage) : 0;
+  const mortgage = clientMortgage(c);
+  const livingNeed = Math.round(income * 0.6 * 12 * 10);
+  const eduNeed = childCount(c) * 120000;
+  const lifeNeed = mortgage + livingNeed + eduNeed;
+  const lifeProj = lifeNow + sumBy(r => r.category === 'life');
+  rows.push({
+    key: 'life', name: '寿险（身故保障）', icon: '🛡️', now: lifeNow, need: lifeNeed, proj: lifeProj,
+    pct: lifeNeed ? Math.min(100, Math.round(lifeNow / lifeNeed * 100)) : 100,
+    projPct: lifeNeed ? Math.min(100, Math.round(lifeProj / lifeNeed * 100)) : 100,
+    breakdown: `房贷 ${fmtRM(mortgage)} + 10年生活费 ${fmtRM(livingNeed)} + 子女教育 ${fmtRM(eduNeed)}`,
+    loss: lifeNow < lifeNeed ? `若家庭支柱不幸离世，家人将面临约 ${fmtRM(lifeNeed - lifeNow)} 的资金缺口` : '保障充足'
+  });
+
+  // 重疾
+  const ciCov = c.coverageDetails.find(d => d.type.includes('重疾'));
+  const ciNow = ciCov ? parseMoney(ciCov.coverage) : 0;
+  const ciNeed = annual * 4;
+  const ciProj = ciNow + sumBy(r => r.category === 'health' && (r.productId || '').includes('CI'));
+  rows.push({
+    key: 'critical', name: '重疾（确诊即赔）', icon: '🏥', now: ciNow, need: ciNeed, proj: ciProj,
+    pct: ciNeed ? Math.min(100, Math.round(ciNow / ciNeed * 100)) : 100,
+    projPct: ciNeed ? Math.min(100, Math.round(ciProj / ciNeed * 100)) : 100,
+    breakdown: `年收入 ${fmtRM(annual)} × 4 倍（覆盖治疗 + 3年收入中断）`,
+    loss: ciNow < ciNeed ? `若确诊重疾，治疗+康复+收入中断预计损失约 ${fmtRM(ciNeed - ciNow)}` : '保障充足'
+  });
+
+  // 医疗
+  const med = c.medicalPlan;
+  const HOSP_DAY = 2000;
+  let medPct = 0, medNow = '无', medNeed = `日额 ≥ ${fmtRM(HOSP_DAY)} / 年限额 ≥ RM 150,000`;
+  if (med) {
+    const dailyPct = Math.min(100, Math.round(med.dailyLimit / HOSP_DAY * 100));
+    const annualPct = Math.min(100, Math.round(med.annualLimit / 150000 * 100));
+    medPct = Math.round((dailyPct + annualPct) / 2);
+    medNow = `日额 ${fmtRM(med.dailyLimit)} / 年限额 ${fmtRM(med.annualLimit)}`;
+  }
+  const medPlanned = projRecs.some(r => r.category === 'health' && (r.productId || '').includes('MED'));
+  const medProj = medPlanned ? Math.max(medPct, 92) : medPct;
+  rows.push({
+    key: 'medical', name: '医疗（住院报销）', icon: '💊', pct: medPct, projPct: medProj,
+    nowText: medNow + (medPlanned ? '（规划升级至 RM 150K 计划）' : ''), needText: medNeed,
+    breakdown: `私立医院日均约 ${fmtRM(HOSP_DAY)}，重大手术年花费可达 RM 100K+`,
+    loss: medPct < 70 ? (med ? `日额/年限额偏低，一次大病可能需自掏 RM 30,000-80,000 差额` : '无住院医疗保障，一次住院全部自费') : '保障充足',
+    isText: true
+  });
+
+  // 财富积累（教育/养老）
+  if (childCount(c) > 0 && c.age < 50) {
+    const eduCov = c.coverageDetails.find(d => d.type.includes('储蓄') || d.type.includes('教育'));
+    const eduNow = eduCov ? parseMoney(eduCov.coverage) : 0;
+    const eduTarget = childCount(c) * 120000;
+    const eduProj = eduNow + sumBy(isEduSavings);
+    rows.push({
+      key: 'savings', name: '教育金储备', icon: '🎓', now: eduNow, need: eduTarget, proj: eduProj,
+      pct: eduTarget ? Math.min(100, Math.round(eduNow / eduTarget * 100)) : 100,
+      projPct: eduTarget ? Math.min(100, Math.round(eduProj / eduTarget * 100)) : 100,
+      breakdown: `${childCount(c)} 名子女 × 大学费用约 RM 120,000`,
+      loss: eduNow < eduTarget ? `子女高等教育资金缺口约 ${fmtRM(eduTarget - eduNow)}` : '储备充足'
+    });
+  }
+  if (c.age >= 45) {
+    const savCov = c.coverageDetails.find(d => d.type.includes('储蓄'));
+    const savNow = savCov ? parseMoney(savCov.coverage) : 0;
+    const retireTarget = annual * 8;
+    const savProj = savNow + sumBy(r => r.category === 'savings' && !isEduSavings(r));
+    rows.push({
+      key: 'pension', name: '退休/养老储备', icon: '🏖️', now: savNow, need: retireTarget, proj: savProj,
+      pct: retireTarget ? Math.min(100, Math.round(savNow / retireTarget * 100)) : 100,
+      projPct: retireTarget ? Math.min(100, Math.round(savProj / retireTarget * 100)) : 100,
+      breakdown: `目标退休储备约 8 倍年收入 ${fmtRM(retireTarget)}`,
+      loss: savNow < retireTarget ? `退休收入替代不足，缺口约 ${fmtRM(retireTarget - savNow)}` : '储备充足'
+    });
+  }
+  return rows;
+}
+function adqColor(pct) { return pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--red)'; }
+
+// ─── 规则引擎核心（保持不变）─────────────────────────────────
+function computeGapAnalysis(c) {
+  const gaps = [];
+  const income = parseInt(c.financial.incomeRange.replace(/[^0-9]/g, '').slice(0,5)) || c.age * 100;
+  const lifeCov = c.coverageDetails.find(d => d.type === '寿险');
+  const lifeAmount = lifeCov ? parseInt(lifeCov.coverage.replace(/[^0-9]/g, '')) : 0;
+  const ciCov = c.coverageDetails.find(d => d.type.includes('重疾'));
+  const medCov = c.coverageDetails.find(d => d.type.includes('医疗'));
+  const savCov = c.coverageDetails.find(d => d.type.includes('储蓄'));
+
+  const lifeGap = (c.hasMortgage ? 450000 : 0) + (c.dependents.includes('child') ? 200000 : 0) - lifeAmount;
+  if (lifeGap > 0 || lifeAmount === 0) {
+    gaps.push({ dimension:'人身风险缺口', detail: lifeAmount === 0 ? '无寿险保障' : '寿险保额不足', risk:'家庭支柱身故将导致收入中断', suggestedCategory: 'life', gapPercent: Math.min(95, lifeAmount === 0 ? 95 : Math.round(lifeGap/500000*100)), severity: lifeAmount === 0 ? 'high' : 'medium' });
+  }
+  if (!ciCov && c.age > 25) {
+    gaps.push({ dimension:'健康风险缺口', detail:'无重疾保障', risk:`重疾可能造成${(income*24).toLocaleString()}收入损失`, suggestedCategory:'health', gapPercent: 95, severity:'high' });
+  }
+  if (!medCov) {
+    gaps.push({ dimension:'健康风险缺口', detail:'无住院医疗保障', risk:'意外或疾病住院无财务支持', suggestedCategory:'health', gapPercent: 80, severity:'high' });
+  }
+  if (c.dependents.includes('child') && !savCov) {
+    gaps.push({ dimension:'财富积累缺口', detail:'有子女但无教育金储备', risk:'子女高等教育费用无保障', suggestedCategory:'savings', gapPercent: 70, severity:'medium' });
+  }
+  if (c.age > 45 && !savCov) {
+    gaps.push({ dimension:'财富积累缺口', detail:'临近退休但无养老储备', risk:'退休后收入替代率不足', suggestedCategory:'savings', gapPercent: 85, severity:'high' });
+  }
+  if (!c.coverageDetails.find(d => d.type.includes('意外'))) {
+    gaps.push({ dimension:'健康风险缺口', detail:'无意外保障', risk:'意外事故无收入替代', suggestedCategory:'accident', gapPercent: 45, severity:'low' });
+  }
+  return gaps;
+}
+function retrieveProducts(gapTypes, clientProfile) {
+  return PRODUCT_KB
+    .filter(p => gapTypes.includes(p.category))
+    .filter(p => clientProfile.age >= p.minAge && clientProfile.age <= (p.maxAge || 99))
+    .sort((a, b) => scoreProduct(b, clientProfile) - scoreProduct(a, clientProfile))
+    .slice(0, 3);
+}
+function scoreProduct(p, client) {
+  let s = 50;
+  if (client.hasMortgage && p.category === 'life') s += 20;
+  if (client.dependents.includes('child') && p.category === 'savings') s += 20;
+  if (client.dependents.includes('child') && (p.tags || []).some(t => t.includes('教育金'))) s += 25;
+  if ((client.lifeEvents || []).some(e => e.name.includes('升学') || e.name.includes('教育')) && (p.tags || []).some(t => t.includes('教育金'))) s += 30;
+  if (client.age > 45 && p.category === 'savings') s += 15;
+  if (client.occupation.includes('Business') && p.category === 'business') s += 25;
+  return s;
+}
+function getEventCategories(eventName) {
+  if (!eventName) return [];
+  if (eventName.includes('子女') || eventName.includes('升学') || eventName.includes('教育') || eventName.includes('新生儿')) return ['savings', 'health'];
+  if (eventName.includes('退休') || eventName.includes('养老')) return ['savings'];
+  if (eventName.includes('房产') || eventName.includes('贷款') || eventName.includes('生意')) return ['life', 'business'];
+  return [];
+}
+
+// 把一个产品构造成一条推荐（可带生命事件标记 eventTag）
+function buildRec(c, p, gap, eventTag) {
+  gap = gap || { dimension: '综合保障', detail: '补充保障', risk: '提升保障完整性', gapPercent: 50, severity: 'medium' };
+  const pitch = buildPitch(c, gap, p);
+  const sa = computeSuggestedSumAssured(c, p);
+  return {
+    productId: p.id, product: p.name, category: p.category, categoryLabel: p.categoryLabel,
+    score: Math.min(98, 60 + scoreProduct(p, c)),
+    summary: `${gap.detail} — ${gap.risk}`,
+    talkTrack: pitch.talkTrack, clientMessage: pitch.clientMessage,
+    riskLoss: computeRiskLoss(c, p), peers: computePeerChoice(c, p),
+    premium: computePremium(p, sa), suggestedSumAssured: sa, coverAmount: coverAmountFor(p, sa),
+    gap, selected: false, eventTag: eventTag || null
+  };
+}
+// 初步推荐方案：始终按"保障充足度缺口"匹配（每个缺口维度取契合度最高 2 款，上限 5 个）。
+// 生命事件不在这里掺合——它是后续由代理人勾选、再【追加】到本方案中的。
+function computeRecommendations(c) {
+  const gaps = computeGapAnalysis(c);
+  const gapCategories = [...new Set(gaps.map(g => g.suggestedCategory))];
+  const allProducts = []; const seenIds = new Set();
+  gapCategories.forEach(cat => {
+    PRODUCT_KB.filter(p => p.category === cat).filter(p => c.age >= p.minAge && c.age <= (p.maxAge || 99))
+      .sort((a, b) => scoreProduct(b, c) - scoreProduct(a, c)).slice(0, 2)
+      .forEach(p => { if (!seenIds.has(p.id)) { seenIds.add(p.id); allProducts.push(p); } });
+  });
+  const recs = allProducts.slice(0, 5).map(p => buildRec(c, p, gaps.find(g => g.suggestedCategory === p.category)));
+  recs.sort((a, b) => b.score - a.score);
+  return recs;
+}
+
+// 每类生命事件对应的【具体产品】（不是整个大类，避免退休事件冒出教育金这种不相干产品）
+const EVENT_PRODUCTS = {
+  '新生儿/子女出生': ['AIA-EDU-001', 'AIA-MED-001'],
+  '结婚': ['AIA-LIFE-001', 'AIA-MED-001'],
+  '购置房产/贷款': ['AIA-LIFE-001'],
+  '子女升学/出国': ['AIA-EDU-002', 'AIA-EDU-001'],
+  '父母年迈/重病': ['AIA-MED-001', 'AIA-CI-001'],
+  '换工作/失去雇主保障': ['AIA-MED-001', 'AIA-CI-001'],
+  '退休临近（55岁+）': ['AIA-ANN-001', 'AIA-MED-001'],
+  '生意扩张/新增贷款': ['AIA-BIZ-001', 'AIA-LIFE-001']
+};
+// 代理人勾选生命事件后：把对应的具体产品【追加】进已有的初步推荐方案，并标记"生命事件推荐"
+function addEventProducts(clientId) {
+  const c = CLIENTS.find(x => x.id === clientId); if (!c) return;
+  const checked = [...document.querySelectorAll('#lifeEventChecks input:checked')].map(i => i.value);
+  if (!checked.length) { showToast('请先勾选至少一个生命事件'); return; }
+  const plan = ensureClientPlan(c); syncActivePlan(c); // 没有初步方案则先生成，再追加
+  plan.checkedEvents = [...new Set([...(plan.checkedEvents || []), ...checked])]; // 记住勾选，重渲染后不丢
+  state.currentGaps = computeGapAnalysis(c);
+  const gaps = state.currentGaps;
+  let added = 0, tagged = 0;
+  checked.forEach(ev => {
+    (EVENT_PRODUCTS[ev] || []).forEach(pid => {
+      const p = PRODUCT_KB.find(x => x.id === pid);
+      if (!p || c.age < p.minAge || c.age > (p.maxAge || 99)) return;
+      const existing = plan.recs.find(r => r.productId === pid);
+      if (existing) { if (existing.eventTag !== ev) { existing.eventTag = ev; tagged++; } }
+      else {
+        const rec = buildRec(c, p, gaps.find(g => g.suggestedCategory === p.category), ev);
+        plan.recs.push(rec);
+        plan.activeProducts.push(plan.recs.length - 1);
+        added++;
+      }
+    });
+  });
+  state.lastRecommendations = plan.recs; state.activeProducts = plan.activeProducts;
+  markStale();
+  renderDecisionZone(c, plan.recs, state.lastProposal); // 事件产品会被置顶展示
+  refreshAdequacy(c);
+  setTimeout(() => scrollToSection('secRec'), 150);
+  const msg = added
+    ? `已追加 ${added} 个生命事件产品到候选池顶部（🔔 标记）${tagged ? '，另有 ' + tagged + ' 个已在池中已标记' : ''}。请点"加入方案"纳入最终方案。`
+    : (tagged ? `相关产品已在候选池中，已标 🔔 置顶（${tagged} 个）。请点"加入方案"纳入。` : '所勾选事件暂无新增产品。');
+  showToast(msg);
+}
+function computeSuggestedSumAssured(c, p) {
+  if (p.category === 'life') return c.hasMortgage ? 'RM 800,000' : 'RM 500,000';
+  if (p.category === 'health') {
+    if ((p.tags||[]).some(t=>t.includes('重疾'))) return 'RM 300,000';
+    return 'RM 150,000/年限额';
+  }
+  if (p.category === 'savings') {
+    // 储蓄/教育/年金的"保额"= 满期可领取的金额（覆盖目标），不是月缴；月缴在 premium 里
+    if (p.maturityBenefit) return p.maturityBenefit;          // 教育金满期给付
+    if (p.monthlyPayout) return p.monthlyPayout + '（月领年金）'; // 年金
+    return 'RM 100,000';
+  }
+  if (p.category === 'accident') return 'RM 50,000';
+  if (p.category === 'business') return 'RM 1,000,000';
+  return '根据需求定制';
+}
+function computePremium(p, sa) {
+  if (p.premiumMonthly) { if (typeof p.premiumMonthly === 'number') return 'RM ' + p.premiumMonthly + '/月'; return 'RM ' + p.premiumMonthly.middle + '/月起'; }
+  if (p.premiumRate && sa && sa.includes('RM')) { const num = parseInt(sa.replace(/[^0-9]/g, '')); if (num) return 'RM ' + Math.round(num * p.premiumRate) + '/月'; }
+  if (p.minPremium) return 'RM ' + p.minPremium + '/月起'; // 储蓄/教育金按起缴月缴
+  if (p.category === 'business') return 'RM 800/月起'; // 企业主/关键人方案
+  return '请咨询代理人';
+}
+// 一条推荐对其所属缺口维度的"贡献保额"（数值），用于充足度投影
+function coverAmountFor(p, sa) {
+  if (p && p.category === 'savings' && p.monthlyPayout) return parseMoney(p.monthlyPayout) * 12 * 20; // 年金按 20 年累计
+  return parseMoney(sa);
+}
+// 储蓄类按"用途"归到教育金 / 退休缺口（按标签判断，而非靠产品ID字符串，否则 Wealth Builder 会漏算）
+function isEduSavings(r) {
+  const kb = PRODUCT_KB.find(p => p.id === r.productId);
+  const tags = ((kb && kb.tags) || []).join();
+  return r.category === 'savings' && (/教育/.test(tags) || (r.productId || '').includes('EDU'));
+}
+// "如果发生 X，你会损失 RM Y" 风险量化
+function computeRiskLoss(c, p) {
+  const income = clientIncome(c); const annual = income * 12;
+  if (p.category === 'life') {
+    const total = clientMortgage(c) + Math.round(income*0.6*12*10) + childCount(c)*120000;
+    const now = parseMoney((c.coverageDetails.find(d=>d.type==='寿险')||{}).coverage);
+    return `若家庭支柱不幸离世，家庭需 ${fmtRM(total)}（房贷+10年生活费+教育），目前仅 ${fmtRM(now)}，缺口约 ${fmtRM(Math.max(0,total-now))}。`;
+  }
+  if (p.category === 'health') {
+    if ((p.tags||[]).some(t=>t.includes('重疾'))) return `若确诊癌症等重疾，马来西亚平均治疗费 RM 150,000-250,000，加上 2-3 年收入中断约 ${fmtRM(annual*2.5)}，目前零现金赔付。`;
+    return `若住院 30 天，私立医院日均约 RM 2,000，预计花费约 RM 60,000，目前需大部分自费。`;
+  }
+  if (p.category === 'savings') {
+    if ((p.tags||[]).some(t=>t.includes('教育金'))) return `${childCount(c)||1} 名子女大学学费预计约 ${fmtRM((childCount(c)||1)*120000)}，目前储备不足，临到用钱时只能动用积蓄或贷款。`;
+    return `退休后若无年金，需自行从积蓄中每月支取约 ${fmtRM(income*0.6)}，约 ${Math.max(1,75-Math.max(60,c.age))} 年后积蓄承压。`;
+  }
+  if (p.category === 'accident') return `若因意外伤残无法工作，每月 ${fmtRM(income)} 收入即中断，意外险可一次性补偿 RM 50,000。`;
+  if (p.category === 'business') return `若企业关键人出意外，生意贷款 ${fmtRM(parseMoney((c.financial.liabilities||[]).find(x=>x.includes('生意'))||''))} 与运营将无人承接。`;
+  return '补足该缺口可显著提升家庭抗风险能力。';
+}
+// "同类客户的真实选择"
+function computePeerChoice(c, p) {
+  if (c.occupation.includes('Business')) return `和您情况相似的 45 岁企业主，通常配置 重疾 RM 300K + 医疗家庭计划 + 定期寿险 RM 800K。`;
+  if (c.age >= 50) return `准退休的同龄客户，多数选择 退休年金（月领 RM 2,000）+ 终身医疗卡 组合。`;
+  if (childCount(c) > 0) return `同样有 ${childCount(c)} 个孩子的年轻家庭，普遍先配 教育金 RM 300/月 + 重疾 RM 200K。`;
+  return `和您同龄、单身的客户，多数趁年轻先锁定 重疾 RM 200K + 个人医疗卡。`;
+}
+function buildPitch(c, gap, product) {
+  const income = parseInt(c.financial.incomeRange.replace(/[^0-9]/g, '').slice(0,5)) || 4000;
+  const messages = {
+    'health': {
+      talkTrack: `${c.name}，以您 ${c.age} 岁，一次重疾至少需要 RM ${(income*24).toLocaleString()} 的治疗和康复费用。${product.name} 确诊即一次性赔付，钱怎么用您说了算。`,
+      clientMessage: buildWhatsApp(c, product, 'health')
+    },
+    'life': {
+      talkTrack: `${c.name}，您是家庭主要经济支柱。万一发生意外，家人每月至少需 RM ${income.toLocaleString()} 维持生活。${product.name} 正好覆盖房贷+生活费这块缺口。`,
+      clientMessage: buildWhatsApp(c, product, 'life')
+    },
+    'savings': {
+      talkTrack: `${c.name}，${c.age < 40 ? '按现在的大学费用，10年后一个孩子至少需要 RM 80,000-120,000' : '您离退休还有 ' + (60-c.age) + ' 年，现在开始规划养老金最合适'}。${product.name} 帮您稳稳实现目标。`,
+      clientMessage: buildWhatsApp(c, product, 'savings')
+    },
+    'accident': {
+      talkTrack: `${c.name}，意外险是性价比最高的基础保障，${product.name} 每月仅 RM 25 起，却能提供 RM 50,000 意外保障。`,
+      clientMessage: buildWhatsApp(c, product, 'accident')
+    },
+    'business': {
+      talkTrack: `${c.name}，作为企业主，您的健康和企业存续息息相关。${product.name} 在关键人出意外时保护企业运营和家人。`,
+      clientMessage: buildWhatsApp(c, product, 'business')
+    }
+  };
+  return messages[product.category] || { talkTrack: `${c.name}，我注意到您还有一个保障缺口，想跟您聊聊 ${product.name}。`, clientMessage: buildWhatsApp(c, product, 'default') };
+}
+// 自然口吻的 WhatsApp 模板（代理人真实会发的样子）
+function buildWhatsApp(c, product, cat) {
+  const first = c.name.split(' ')[0];
+  const sa = computeSuggestedSumAssured(c, product);
+  const prem = computePremium(product, sa);
+  const premNum = parseInt((prem.match(/\d[\d,]*/) || ['480'])[0].replace(/,/g, ''));
+  const perDay = Math.max(1, Math.round(premNum / 30));
+  const lines = {
+    health: { hook: `上次聊到您对重疾保障有兴趣，我把方案整理好了 👇`, content: `RM 300K 重疾保障`, prem: `${prem} = 每天约 RM ${perDay}`, light: `确诊即赔付，不需要等报销 💪` },
+    life: { hook: `上次聊到家里房贷和孩子，我帮您算了份保障方案 👇`, content: `${sa} 寿险保障`, prem: `${prem} = 每天约 RM ${perDay}`, light: `万一有事，房贷和孩子教育都有着落 🏠` },
+    savings: { hook: `帮您把孩子的教育金方案做出来了 👇`, content: `每月小额存，目标 ${product.maturityBenefit || 'RM 80K-200K'}`, prem: `${prem}`, light: `越早开始越轻松，复利帮您赚 📈` },
+    accident: { hook: `推荐您一个性价比超高的小保障 👇`, content: `RM 50K 意外保障`, prem: `${prem} = 每天不到 RM 1`, light: `加在主险上，几乎无感 ✅` },
+    business: { hook: `考虑到您公司的扩张，帮您看了企业主保障 👇`, content: `关键人 / 业务延续保障`, prem: `按需定制`, light: `万一关键人有事，生意不断档 🏢` },
+    default: { hook: `帮您看了一下保障，有个重要缺口想跟您说 👇`, content: product.name, prem: `${prem}`, light: `很适合您目前的情况 😊` }
+  };
+  const l = lines[cat] || lines.default;
+  return `${first}! ${l.hook}\n[保障内容] ${l.content}\n[月保费] ${l.prem}\n[最大亮点] ${l.light}\n方便今天或明天找个时间详细聊聊吗？😊`;
+}
+function isProductMatchForEvent(rec, eventName) {
+  if (!rec || !eventName) return false;
+  const tags = rec.productId ? (PRODUCT_KB.find(p => p.id === rec.productId)?.tags || []) : [];
+  if (eventName.includes('子女') || eventName.includes('升学') || eventName.includes('教育')) return tags.some(t => t.includes('教育金')) || rec.category === 'savings';
+  if (eventName.includes('退休') || eventName.includes('养老')) return tags.some(t => t.includes('年金') || t.includes('退休')) || rec.category === 'savings';
+  if (eventName.includes('新生儿') || eventName.includes('子女出生')) return rec.category === 'health' || rec.category === 'savings';
+  if (eventName.includes('房产') || eventName.includes('贷款')) return rec.category === 'life' || tags.some(t => t.includes('房贷') || t.includes('寿险'));
+  if (eventName.includes('生意')) return rec.category === 'business' || rec.category === 'life';
+  return false;
+}
+function mdToHtml(md) {
+  if (!md) return '';
+  return md.replace(/^### (.+)$/gm, '<h3>$1</h3>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/^# (.+)$/gm, '<h1>$1</h1>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n- /g, '\n• ').replace(/\n/g, '<br>');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 今日行动清单（首页）— 打开第一眼：今天见谁 / 跟进谁 / 谁快到期
+// ═══════════════════════════════════════════════════════════════
+function getTodayData() {
+  const clientAppts = CLIENTS.filter(c => c.nextMeeting && c.nextMeeting.date === TODAY_ISO)
+    .map(c => ({ clientId: c.id, avatar: c.avatar, name: c.name, tag: c.tags[0], time: c.nextMeeting.time, place: c.nextMeeting.place, purpose: c.nextMeeting.purpose }));
+  const schedAppts = (state.scheduled || []).filter(s => s.date === TODAY_ISO)
+    .map(s => ({ clientId: s.clientId || '', avatar: s.clientId ? ((CLIENTS.find(c => c.id === s.clientId) || {}).avatar || '🔔') : '🔔', name: s.name, tag: '跟进', time: s.time || '待定', place: s.place || '电话/拜访跟进', purpose: s.purpose || '跟进' }));
+  const appts = [...clientAppts, ...schedAppts].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  const renewals = CLIENTS.map(c => ({ c, days: daysUntil(c.renewalDate), policy: c.coverageDetails.find(d => d.expiryDate === c.renewalDate) || c.coverageDetails[0] }))
+    .filter(x => x.days <= 90 && x.days >= -3).sort((a, b) => a.days - b.days);
+  // 高意向线索：渠道高分线索 + 长期未联系的高加保潜力客户
+  const leadFromPipeline = [];
+  PIPELINE.forEach((stg, si) => stg.leads.forEach((l, li) => { if (l.score === '高' && (stg.stage === '待联系' || stg.stage === '已约访')) leadFromPipeline.push({ lead: l, si, li, stage: stg.stage }); }));
+  const leadFromClients = CLIENTS.filter(c => c.healthScore.upsellPotential >= 82 && c.healthScore.lastContact >= 20)
+    .map(c => ({ client: c }));
+  return { appts, renewals, leads: { pipeline: leadFromPipeline, clients: leadFromClients } };
+}
+function renderHome() {
+  const d = getTodayData();
+  const totalLeads = d.leads.pipeline.length + d.leads.clients.length;
+  const totalCount = d.appts.length + d.renewals.length + totalLeads;
+  const dateStr = `${TODAY.getMonth() + 1} 月 ${TODAY.getDate()} 日`;
+  const weekday = ['周日','周一','周二','周三','周四','周五','周六'][TODAY.getDay()];
+
+  const apptHtml = d.appts.length ? d.appts.map(a => `
+    <div class="todo-tile t-appt" ${a.clientId ? `onclick="openPrep('${a.clientId}')"` : 'style="cursor:default;"'}>
+      <div class="todo-avatar">${a.avatar}</div>
+      <div class="todo-main">
+        <div class="tm-name">${a.name} <span class="tag tag-blue" style="font-size:.62rem;">${a.tag}</span></div>
+        <div class="tm-sub">📍 ${a.place}</div>
+        <div class="tm-action">🎯 ${a.purpose}</div>
+      </div>
+      <div class="todo-time"><div class="tt-big">${a.time}</div><div class="tt-small">${a.clientId ? '点开备课卡 →' : '已安排跟进'}</div></div>
+    </div>`).join('') : '<p style="color:var(--gray-500);font-size:.85rem;padding:6px;">今天没有预约拜访</p>';
+
+  const renewHtml = d.renewals.length ? d.renewals.map(x => {
+    const urgent = x.days <= 14;
+    return `<div class="todo-tile t-renew" onclick="openPrep('${x.c.id}')">
+      <div class="todo-avatar" style="background:var(--amber-bg);">${x.c.avatar}</div>
+      <div class="todo-main">
+        <div class="tm-name">${x.c.name} ${urgent ? '<span class="tag tag-red" style="font-size:.62rem;">紧急</span>' : ''}</div>
+        <div class="tm-sub">${x.policy ? x.policy.type : '保单'} · 到期 ${x.c.renewalDate}</div>
+        <div class="tm-action">💡 借续期重建联系，顺势加保</div>
+      </div>
+      <div class="todo-time"><div class="tt-big" style="color:${urgent ? 'var(--red)' : 'var(--amber)'};">${x.days}天</div><div class="tt-small">内到期</div></div>
+    </div>`;
+  }).join('') : '<p style="color:var(--gray-500);font-size:.85rem;padding:6px;">近 90 天无保单到期</p>';
+
+  const leadHtml = [
+    ...d.leads.pipeline.map(x => `
+      <div class="todo-tile t-lead" onclick="showLeadDetail(${x.si},${x.li})">
+        <div class="todo-avatar" style="background:var(--green-bg);">🔥</div>
+        <div class="todo-main">
+          <div class="tm-name">${x.lead.name} <span class="tag tag-green" style="font-size:.62rem;">高意向</span></div>
+          <div class="tm-sub">${x.lead.source} · ${x.stage} · 预计 ${fmtRM(x.lead.value)}</div>
+          <div class="tm-action">💡 ${x.lead.reason}</div>
+        </div>
+        <div class="todo-time"><div class="tt-small">查看线索 →</div></div>
+      </div>`),
+    ...d.leads.clients.map(x => `
+      <div class="todo-tile t-lead" onclick="openPrep('${x.client.id}')">
+        <div class="todo-avatar" style="background:var(--green-bg);">${x.client.avatar}</div>
+        <div class="todo-main">
+          <div class="tm-name">${x.client.name} <span class="tag tag-amber" style="font-size:.62rem;">加保潜力 ${x.client.healthScore.upsellPotential}%</span></div>
+          <div class="tm-sub">已 ${x.client.healthScore.lastContact} 天未联系，关系转冷</div>
+          <div class="tm-action">💡 主动跟进，避免流失</div>
+        </div>
+        <div class="todo-time"><button class="btn" style="font-size:.7rem;padding:3px 8px;" onclick="event.stopPropagation();scheduleFollowup('${x.client.name}','${x.client.id}','主动跟进，避免流失')">📅 安排跟进</button><div class="tt-small" style="margin-top:3px;">备课卡 →</div></div>
+      </div>`)
+  ].join('') || '<p style="color:var(--gray-500);font-size:.85rem;padding:6px;">暂无高意向线索</p>';
+
+  document.getElementById('homeDot').textContent = totalCount;
+  document.getElementById('tab-home').innerHTML = `
+    <div class="home-greeting">
+      <div class="hg-date">${dateStr} · ${weekday} · 早上好 ☀️</div>
+      <div class="hg-hello">你好，${AGENT_NAME}</div>
+      <div class="hg-summary">今日有 <b>${totalCount}</b> 件事需要跟进：${d.appts.length} 个拜访、${d.renewals.length} 个续期、${totalLeads} 个高意向线索</div>
+    </div>
+
+    <div class="action-block ab-appt">
+      <div class="action-block-head">📅 今日预约拜访 <span class="ab-count">${d.appts.length} 个客户</span></div>
+      ${apptHtml}
+    </div>
+    <div class="action-block ab-renew">
+      <div class="action-block-head">⚠️ 续期提醒 <span class="ab-count">90 天内 ${d.renewals.length} 单</span></div>
+      ${renewHtml}
+    </div>
+    <div class="action-block ab-lead">
+      <div class="action-block-head">💡 高意向线索待跟进 <span class="ab-count">${totalLeads} 个</span></div>
+      ${leadHtml}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 客户备课卡（核心页面）— 手机竖屏卡片，见客户前 3 分钟用
+// ═══════════════════════════════════════════════════════════════
+function openPrep(clientId) {
+  state.selectedClientId = clientId; // 全局唯一"当前客户"，各 Tab 共享
+  switchTab('prep');
+}
+function renderPrep() {
+  const wrap = document.getElementById('tab-prep');
+  const sel = `<div class="prep-selector"><select onchange="state.selectedClientId=this.value;renderPrep()" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--gray-200);font-size:.9rem;">
+    <option value="">— 选择客户备课 —</option>
+    ${CLIENTS.map(c => `<option value="${c.id}" ${state.selectedClientId === c.id ? 'selected' : ''}>${c.avatar} ${c.name}（${c.age}岁 · ${c.tags[0]}）</option>`).join('')}
+  </select></div>`;
+
+  const c = CLIENTS.find(x => x.id === state.selectedClientId);
+  if (!c) {
+    wrap.innerHTML = `<div class="prep-wrap">${sel}<div class="panel" style="text-align:center;padding:50px;color:var(--gray-500);"><div style="font-size:3rem;margin-bottom:10px;">📇</div><p>选择一个客户，3 分钟备好这次见面的资料</p><p style="font-size:.8rem;margin-top:6px;">也可从「今日」页直接点客户进入</p></div></div>`;
+    return;
+  }
+  const adq = computeAdequacy(c);
+  const worst = adq.slice().sort((a, b) => a.pct - b.pct)[0];
+  const stageColors = { '单身期':'#3b82f6', '家庭形成期':'#8b5cf6', '家庭成长期':'#059669', '退休准备期':'#d97706' };
+  const isVip = c.tags.includes('高净值');
+
+  wrap.innerHTML = `<div class="prep-wrap">${sel}
+    <div class="prep-card">
+      <div class="prep-hero">
+        <div class="prep-avatar">${c.avatar}</div>
+        <div class="prep-name">${c.name}</div>
+        <div class="prep-meta">${c.age} 岁 · ${c.occupation.split('(')[0].trim()} · ${c.financial.incomeRange}/月</div>
+        <div class="prep-tags">${isVip ? '<span style="background:linear-gradient(135deg,#f59e0b,#d97706);">⭐ 高净值</span>' : ''}${c.tags.filter(t => t !== '高净值').map(t => `<span>${t}</span>`).join('')}</div>
+        ${c.nextMeeting && c.nextMeeting.date === TODAY_ISO ? `<div style="margin-top:10px;font-size:.78rem;background:rgba(255,255,255,.15);display:inline-block;padding:4px 12px;border-radius:12px;">📅 今天 ${c.nextMeeting.time} · ${c.nextMeeting.place}</div>` : ''}
+      </div>
+      <div class="prep-body">
+        <div class="prep-row pr-last">
+          <div class="pr-label">📌 上次聊了什么</div>
+          <div class="pr-text">${c.briefing.lastTalk}</div>
+        </div>
+        <div class="prep-row pr-focus">
+          <div class="pr-label">🎯 这次重点</div>
+          <div class="pr-text">${c.briefing.thisFocus}</div>
+        </div>
+        <div class="prep-row pr-open">
+          <div class="pr-label">💬 开场怎么说</div>
+          <div class="pr-text">${c.briefing.opener}</div>
+        </div>
+        <div class="prep-risk">
+          <div class="pr-label">⚠️ 最大缺口（可现场亮出）</div>
+          <div style="font-size:.85rem;font-weight:600;">${worst.icon} ${worst.name}：充足度仅 <span style="color:${adqColor(worst.pct)};">${worst.pct}%</span></div>
+          <div class="pr-num" style="margin-top:3px;">${worst.loss}</div>
+        </div>
+      </div>
+      <div class="prep-actions">
+        <a class="btn btn-success" href="tel:${c.phone.replace(/\s/g,'')}" style="text-decoration:none;">📞 打电话</a>
+        <button class="btn btn-wa" onclick="openWhatsAppFromPrep('${c.id}')">💬 发 WhatsApp</button>
+        <button class="btn" onclick="state.selectedClientId='${c.id}';openVisitModal()">📝 记录拜访</button>
+      </div>
+      <div class="prep-foot">
+        <button class="btn btn-primary" onclick="state.selectedClientId='${c.id}';switchTab('client')">📋 查看完整档案 / 生成方案 →</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:14px;">
+      <div class="panel-header">📜 历史拜访记录 <span style="margin-left:auto;font-size:.75rem;color:var(--gray-500);">共 ${getVisits(c).length} 次</span></div>
+      <div class="panel-body">
+        <button class="btn" style="margin-bottom:10px;font-size:.8rem;" onclick="state.selectedClientId='${c.id}';openVisitModal()">📝 记录本次拜访</button>
+        ${getVisits(c).map(v => `<div class="visit-item"><div style="display:flex;justify-content:space-between;align-items:center;"><strong style="font-size:.82rem;">📅 ${v.date}</strong><span class="tag ${v.intent && v.intent.includes('高') ? 'tag-green' : v.intent && v.intent.includes('中') ? 'tag-amber' : 'tag-gray'}" style="font-size:.62rem;">${(v.intent||'').split(' ')[0]}</span></div><div style="font-size:.8rem;color:var(--gray-700);margin-top:3px;">${v.summary}</div></div>`).join('') || '<p style="font-size:.82rem;color:var(--gray-500);">暂无历史拜访</p>'}
+      </div>
+    </div>
+  </div>`;
+}
+function openWhatsAppFromPrep(clientId) {
+  const c = CLIENTS.find(x => x.id === clientId);
+  state.selectedClientId = clientId;
+  // 用共享方案里的首选产品生成自然口吻 WhatsApp
+  ensureClientPlan(c); syncActivePlan(c);
+  const recs = state.plans[c.id].recs;
+  state.activeChannel = 'whatsapp';
+  updateChannelContent(c, recs[0]);
+  document.querySelectorAll('.channel-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ch-wa').classList.add('active');
+  document.getElementById('sendModal').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 见面辅助 — 偷看话术卡 + AI 实时应答 + FAQ + 陪练
+// ═══════════════════════════════════════════════════════════════
+function openMeeting(clientId) { state.selectedClientId = clientId; switchTab('meeting'); }
+function renderMeeting() {
+  const wrap = document.getElementById('tab-meeting');
+  const c = CLIENTS.find(x => x.id === state.selectedClientId); // 跟随全局"当前客户"
+  // 见面辅助【只消费】方案，不在这里生成。若该客户尚无方案 → 引导去"客户与方案"生成。
+  const hasPlan = c && !!state.plans[c.id];
+  let talkRecs = [];
+  if (hasPlan) { syncActivePlan(c); talkRecs = planSelected(c); } // 见面话术 = 已"加入"的最终方案（全部展示）
+  const faqCats = talkRecs.length ? [...new Set(talkRecs.map(r => r.category))] : [];
+  let faq = FAQ_TEMPLATES.default;
+  for (const cat of faqCats) { if (FAQ_TEMPLATES[cat]) { faq = FAQ_TEMPLATES[cat]; break; } }
+
+  const talkPanel = c ? `<div class="panel" style="margin-bottom:14px;" id="secTalk">
+      <div class="panel-header">1️⃣ 💬 本客户最终方案话术 <span class="tag tag-blue" style="margin-left:auto;">${c.name}${talkRecs.length ? ' · 已加入 ' + talkRecs.length + ' 个' : ''}</span></div>
+      <div class="panel-body">
+        ${!hasPlan ? `<div style="text-align:center;padding:24px;background:var(--gray-50);border-radius:10px;border:1px dashed var(--gray-300);">
+          <div style="font-size:1.6rem;margin-bottom:6px;">📋</div>
+          <p style="font-size:.86rem;color:var(--gray-700);margin-bottom:4px;">${c.name} 还没有方案。请先到「客户画像与方案推荐」生成推荐、点"加入方案"。</p>
+          <button class="btn btn-primary" style="margin-top:8px;" onclick="switchTab('client')">📋 去生成方案 →</button>
+        </div>` : (!talkRecs.length ? `<div style="text-align:center;padding:24px;background:var(--amber-bg);border-radius:10px;border:1px dashed #fcd34d;">
+          <div style="font-size:1.6rem;margin-bottom:6px;">➕</div>
+          <p style="font-size:.86rem;color:#92400e;margin-bottom:4px;">已生成候选池，但还没有"加入"任何产品。请到「客户画像与方案推荐」点「加入方案」。</p>
+          <button class="btn btn-primary" style="margin-top:8px;" onclick="switchTab('client')">📋 去加入产品 →</button>
+        </div>` : `
+        <div style="font-size:.78rem;color:var(--gray-500);margin-bottom:8px;">已"加入方案"的全部 ${talkRecs.length} 个产品（含生命事件追加），与「客户画像与方案推荐」同步。</div>
+        ${talkRecs.map(r => `<div style="background:var(--gray-50);padding:12px;border-radius:8px;margin-bottom:10px;">
+          <strong style="font-size:.9rem;">${r.product} <span class="tag tag-green" style="font-size:.6rem;">已加入</span>${r.eventTag?` <span class="tag tag-amber" style="font-size:.58rem;">🔔${r.eventTag}</span>`:''}</strong>
+          <p style="font-size:.8rem;color:var(--gray-700);margin-top:4px;">🗣️ ${r.talkTrack}</p>
+          <p style="font-size:.78rem;color:var(--gray-500);margin-top:3px;">💰 ${r.premium} · 建议保额 ${r.suggestedSumAssured}</p>
+        </div>`).join('')}`)}
+      </div>
+    </div>` : '<div class="panel" style="margin-bottom:14px;" id="secTalk"><div class="panel-body" style="text-align:center;color:var(--gray-500);padding:20px;">请先选择客户</div></div>';
+
+  const livePanel = `<div class="panel" style="margin-bottom:14px;" id="secLive">
+      <div class="panel-header">2️⃣ ⚡ AI 实时陪答 <span class="tag tag-amber" style="margin-left:auto;">✨ 客户说啥，立刻给你接话</span></div>
+      <div class="panel-body ai-speech-box">
+        <div style="font-size:.82rem;color:var(--gray-500);margin-bottom:6px;">把客户刚说的话敲进去，AI 结合该客户情况立刻生成一句针对性回应（现场救急用）。</div>
+        <textarea id="speechInput" placeholder="例如：我觉得太贵了 / 我要回去和太太商量 / 公司团险够了吧..." style="min-height:60px;"></textarea>
+        <button class="btn btn-primary" onclick="generateSpeech()" style="font-size:.82rem;">⚡ 生成陪答</button>
+        <button class="btn" onclick="document.getElementById('speechResult').style.display='none'" style="font-size:.82rem;">清除</button>
+        <div id="speechResult" style="display:none;margin-top:10px;">
+          <div class="ai-speech-result" id="speechResultContent"></div>
+          <button class="btn" style="font-size:.75rem;margin-top:6px;" onclick="generateSpeech()">🔄 换一种说法</button>
+        </div>
+      </div>
+    </div>`;
+
+  const objPanel = `<div class="panel" style="margin-bottom:14px;" id="secObj">
+      <div class="panel-header">3️⃣ 🛡️ 客户有异议·参考话术 <span class="tag tag-gray" style="margin-left:auto;">化解抗拒 / 说服</span></div>
+      <div class="panel-body">
+        <div style="font-size:.78rem;color:var(--gray-500);margin-bottom:10px;">客户<strong>拒绝/犹豫/有戒心</strong>时照着说的<strong>说服话术</strong>（与下方 FAQ 不同：FAQ 是回答事实问题，这里是化解抗拒）。</div>
+        <div class="obj-grid">
+          ${OBJECTION_CARDS.map(o => `
+            <div class="obj-card">
+              <div class="obj-trigger"><span class="ot-q">客户说：</span>"${o.trigger}"</div>
+              <div class="obj-resp">${o.resp}<span class="or-tip">👉 技巧：${o.tip}</span></div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  const roleplayPanel = `<div class="panel" style="margin-bottom:14px;" id="roleplaySection">
+      <div class="panel-header">4️⃣ 🎭 AI 陪练（针对异议，模拟对练）</div>
+      <div class="panel-body">
+        <select id="roleplayType" style="max-width:320px;width:100%;padding:6px;border-radius:6px;border:1px solid var(--gray-200);margin-bottom:8px;" onchange="startRoleplay()">
+          <option value="">-- 选择客户异议类型，开始模拟对练 --</option>
+          <option value="price">💰 价格太贵</option>
+          <option value="comparison">🔄 要比较其他公司</option>
+          <option value="delay">⏰ 再考虑一下</option>
+          <option value="coverage">🛡️ 已经有保险了</option>
+          <option value="trust">🤝 不太信任</option>
+        </select>
+        <div id="roleplayArea" style="display:none;">
+          <div class="roleplay-chat" id="roleplayChat"></div>
+          <div id="coachingBox" style="display:none;" class="coaching-box"></div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="roleplayInput" placeholder="输入您的回应..." style="flex:1;padding:8px;border:1px solid var(--gray-200);border-radius:6px;" onkeydown="if(event.key==='Enter')sendRoleplay()">
+            <button class="btn btn-primary" onclick="sendRoleplay()">发送</button>
+          </div>
+          <button class="btn" style="font-size:.75rem;margin-top:8px;" onclick="startRoleplay()">🔄 重新开始</button>
+        </div>
+      </div>
+    </div>`;
+
+  const faqPanel = `<div class="panel" style="margin-bottom:14px;" id="secFAQ">
+      <div class="panel-header">5️⃣ ❓ FAQ 答疑库 <span class="tag tag-gray" style="margin-left:auto;">回答产品/条款的事实问题</span></div>
+      <div class="panel-body">
+        <div style="font-size:.78rem;color:var(--gray-500);margin-bottom:10px;">客户<strong>问具体问题</strong>（保障范围、等待期、理赔、抵税…）时的标准答案${talkRecs.length ? '（已按本客户方案的险种自动匹配）' : ''}。</div>
+        <div class="grid-2">${faq.map((f, i) => `<div class="faq-item"><div class="faq-q">Q${i+1}: ${f.q}</div><div class="faq-a">A: ${f.a}</div></div>`).join('')}</div>
+      </div>
+    </div>`;
+
+  const visitPanel = c ? `<div class="panel" style="margin-bottom:14px;" id="secVisitMeet">
+      <div class="panel-header">6️⃣ 📝 见完记录本次拜访</div>
+      <div class="panel-body" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:.82rem;color:var(--gray-500);">见面结束后记录关键内容（AI 自动提取生命事件/顾虑/购买信号），写入该客户历史拜访。</span>
+        <button class="btn btn-primary" style="margin-left:auto;" onclick="state.selectedClientId='${c.id}';openVisitModal()">📝 记录本次拜访</button>
+        <button class="btn" onclick="showVisitHistory('${c.id}')">📜 查看历史拜访</button>
+      </div>
+    </div>` : '';
+
+  wrap.innerHTML = `
+    <div class="flex-row">
+      <div class="w-300 side-col">
+        <div class="panel">
+          <div class="panel-header">👤 当前客户</div>
+          <div class="panel-body">
+            <select onchange="openMeeting(this.value)" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--gray-200);font-size:.88rem;">
+              <option value="">— 选择客户 —</option>
+              ${CLIENTS.map(x => `<option value="${x.id}" ${c && c.id === x.id ? 'selected' : ''}>${x.avatar} ${x.name}</option>`).join('')}
+            </select>
+            ${c ? `<p style="font-size:.8rem;color:var(--gray-500);margin-top:8px;"><b>${c.name}</b> · ${c.age}岁 · ${c.tags[0]}</p>` : ''}
+          </div>
+        </div>
+        <div class="panel sticky-nav" style="margin-top:14px;">
+          <div class="panel-header">📑 见面流程</div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-block" onclick="scrollToSection('secTalk')">1️⃣ 方案话术</button>
+            <button class="btn btn-block" onclick="scrollToSection('secLive')">2️⃣ 实时陪答</button>
+            <button class="btn btn-block" onclick="scrollToSection('secObj')">3️⃣ 异议话术</button>
+            <button class="btn btn-block" onclick="scrollToSection('roleplaySection')">4️⃣ AI陪练</button>
+            <button class="btn btn-block" onclick="scrollToSection('secFAQ')">5️⃣ FAQ答疑</button>
+            ${c ? `<button class="btn btn-block" onclick="scrollToSection('secVisitMeet')">6️⃣ 记录拜访</button>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="flex-1">
+        ${talkPanel}${livePanel}${objPanel}${roleplayPanel}${faqPanel}${visitPanel}
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 客户与方案（深度页）— 画像 + 充足度 + 缺口 + 推荐 + 建议书
+// ═══════════════════════════════════════════════════════════════
+function getAIAction(c) {
+  const d = daysUntil(c.renewalDate);
+  if (d <= 30 && d > 0) return '保单' + d + '天内到期，建议本周联系续保';
+  if (c.lifeEvents.length > 0) return '有触发生命事件，建议安排拜访';
+  if (c.healthScore.lastContact > 30) return '已' + c.healthScore.lastContact + '天未联系，建议主动跟进';
+  if (c.healthScore.upsellPotential > 80) return '加保潜力高，建议推荐重疾/医疗';
+  return '客户状态正常，按计划跟进';
+}
+function renderClientList(filter = '') {
+  const container = document.getElementById('clientList');
+  const q = (filter || '').toLowerCase();
+  const filtered = CLIENTS.filter(c => !q || c.name.toLowerCase().includes(q) || c.tags.some(t => t.includes(q)));
+  document.getElementById('clientCount').textContent = filtered.length + '人';
+  container.innerHTML = filtered.map(c => `
+    <div class="client-card ${state.selectedClientId === c.id ? 'selected' : ''}" onclick="selectClient('${c.id}')">
+      <div class="name">${c.avatar} ${c.name} <span style="font-weight:400;font-size:.72rem;color:var(--gray-500);">${c.age}岁</span></div>
+      <div class="meta">${c.financial.incomeRange}/月 · ${c.occupation.split('(')[0].trim()}</div>
+      <div class="tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</div>
+      <div style="margin-top:4px;font-size:.7rem;color:var(--gray-500);"><span class="health-dot ${c.healthScore.churnRisk}"></span>${c.healthScore.lastContact}天前联系${c.lifeEvents.length ? ' · 🔔 ' + c.lifeEvents.length + '事件' : ''}</div>
+    </div>`).join('') || '<p style="text-align:center;color:var(--gray-500);padding:20px;">无匹配客户</p>';
+}
+function selectClient(id) {
+  if (state.lastClientForRec && state.lastClientForRec.id !== id) {
+    state.lastRecommendations = null; state.lastProposal = ''; state.proposalGenerated = false;
+    state.proposalStale = false; state.currentGaps = null; state.activeProducts = null; state.triggeredEvent = null;
+  }
+  state.selectedClientId = id;
+  const c = CLIENTS.find(x => x.id === id);
+  if (c && state.plans[id]) { syncActivePlan(c); state.currentGaps = computeGapAnalysis(c); } // 恢复已保存方案
+  renderClientList(document.getElementById('clientSearch')?.value || '');
+  renderClientDeep();
+}
+function renderClientTab() {
+  renderClientList(document.getElementById('clientSearch')?.value || '');
+  if (state.selectedClientId) renderClientDeep();
+}
+// 充足度面板（可单独重渲染，使产品增删改后缺口数值实时联动）
+function adequacyPanelHTML(c) {
+  const applied = planAppliedRecs(c);
+  const adq = computeAdequacy(c, applied);
+  const hasPlan = applied.length > 0;
+  return `<div class="panel" style="margin-bottom:16px;" id="secAdequacy">
+      <div class="panel-header">🛡️ 保障充足度分析 <span class="tag tag-gray" style="margin-left:auto;">不只看"有没有"，更看"够不够"</span></div>
+      <div class="panel-body">
+        <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:12px;">基准：马来西亚私立医院日均 RM 1,500-3,000 · 重疾建议保额=年收入×3-5倍 · 寿险=房贷+10年生活费+教育金${hasPlan ? ' <span style="color:var(--blue);font-weight:600;">· 浅蓝段=已加入方案后的规划充足度</span>' : ''}</div>
+        ${adq.map(r => {
+          const gain = (r.projPct || r.pct) > r.pct;
+          return `<div class="adq-row">
+            <div class="adq-head">
+              <span class="adq-name">${r.icon} ${r.name}</span>
+              <span class="adq-pct" style="color:${adqColor(r.pct)};">当前 ${r.pct}%${gain ? ` <span style="color:var(--blue);">→ 规划后 ${r.projPct}%</span>` : ''}</span>
+            </div>
+            <div class="adq-track" style="position:relative;">
+              ${gain ? `<div class="adq-fill" style="position:absolute;inset:0 auto 0 0;width:${r.projPct}%;background:${adqColor(r.projPct)};opacity:.35;"></div>` : ''}
+              <div class="adq-fill" style="position:absolute;inset:0 auto 0 0;width:${r.pct}%;background:${adqColor(r.pct)};"></div>
+            </div>
+            <div class="adq-nums">${r.isText ? `当前 <b>${r.nowText}</b> · 建议 <b>${r.needText}</b>` : `当前 <b>${fmtRM(r.now)}</b> · 建议 <b>${fmtRM(r.need)}</b>（${r.breakdown}）`}</div>
+            ${r.pct < 70 ? `<div class="adq-loss">⚠️ ${r.loss}</div>` : `<div style="font-size:.78rem;color:var(--green);margin-top:3px;">✅ ${r.loss}</div>`}
+          </div>`;
+        }).join('')}
+        <div style="text-align:right;margin-top:12px;">
+          <button class="btn btn-primary" onclick="runRecommendation()">✨ 生成推荐方案 →</button>
+        </div>
+      </div>
+    </div>`;
+}
+function refreshAdequacy(c) {
+  const el = document.getElementById('secAdequacy');
+  if (el) el.outerHTML = adequacyPanelHTML(c);
+}
+
+function renderClientDeep() {
+  const c = CLIENTS.find(x => x.id === state.selectedClientId);
+  if (!c) return;
+  // 始终以"当前客户自己的方案"为准；没有方案则清掉全局残留，避免显示上一个客户的方案
+  if (state.plans[c.id]) { syncActivePlan(c); state.currentGaps = computeGapAnalysis(c); }
+  else { state.lastRecommendations = null; state.lastClientForRec = c; state.activeProducts = null; state.lastProposal = ''; state.proposalGenerated = false; state.proposalStale = false; state.currentGaps = computeGapAnalysis(c); }
+  const cov = c.coverageScores;
+  const stageColors = { '单身期':'#3b82f6', '家庭形成期':'#8b5cf6', '家庭成长期':'#059669', '退休准备期':'#d97706' };
+  const stageColor = stageColors[c.lifeStage] || '#6b7280';
+  const hasRec = !!state.plans[c.id];
+
+  document.getElementById('clientMain').innerHTML = `
+    <!-- 360 PROFILE -->
+    <div class="panel" style="margin-bottom:16px;" id="secProfile">
+      <div class="panel-header">${c.avatar} ${c.name} · 360°全景画像
+        <span style="margin-left:auto;font-size:.75rem;background:${stageColor};color:#fff;padding:3px 10px;border-radius:12px;">${c.lifeStage}</span>
+      </div>
+      <div class="panel-body">
+        <div class="grid-2">
+          <div>
+            <h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:8px;">📋 基本信息</h4>
+            <p style="font-size:.85rem;margin:4px 0;"><strong>年龄：</strong>${c.age}岁 · ${c.occupation}</p>
+            <p style="font-size:.85rem;margin:4px 0;"><strong>月收入：</strong>${c.financial.incomeRange} · 预算 ${c.financial.budget}</p>
+            <p style="font-size:.85rem;margin:4px 0;"><strong>家属：</strong>${c.dependents}</p>
+            <p style="font-size:.85rem;margin:4px 0;"><strong>房贷：</strong>${c.hasMortgage ? '有（' + fmtRM(clientMortgage(c)) + '）' : '无'}</p>
+            <div style="margin-top:8px;">
+              <a class="btn btn-wa" style="text-decoration:none;font-size:.75rem;padding:5px 12px;" href="https://wa.me/${c.whatsapp.replace(/[^0-9]/g,'')}" target="_blank">📱 WhatsApp</a>
+              <a class="btn" style="text-decoration:none;font-size:.75rem;padding:5px 12px;" href="tel:${c.phone.replace(/\s/g,'')}">📞 ${c.phone}</a>
+            </div>
+          </div>
+          <div>
+            <h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:8px;">🛡️ 当前保障</h4>
+            <div id="ocrUploadArea" class="ocr-upload-area" onclick="triggerOCRUpload('${c.id}')">
+              <div style="font-size:1.1rem;">📸</div>
+              <div style="font-size:.78rem;font-weight:600;">OCR 保单解析（拍他司保单）</div>
+              <div style="font-size:.68rem;color:var(--gray-500);" id="ocrStatus">点击上传保单照片，自动识别保障</div>
+              <div class="ocr-progress-wrap" id="ocrProgressWrap"><div class="ocr-progress-bar"><div class="ocr-progress-fill" id="ocrProgressFill"></div></div></div>
+            </div>
+            ${c.coverageDetails.map(v => `<div style="font-size:.8rem;margin-bottom:4px;"><span class="tag tag-blue">${v.type}</span> ${v.coverage} <span style="color:var(--gray-400);">· ${v.source}</span></div>`).join('') || '<p style="font-size:.85rem;color:var(--gray-500);">无保障记录</p>'}
+          </div>
+        </div>
+        <h4 style="font-size:.85rem;color:var(--gray-500);margin:14px 0 8px;">💰 财务概况</h4>
+        <div style="background:var(--gray-50);padding:12px;border-radius:8px;font-size:.85rem;">
+          ${c.assetInfo}
+          <div style="margin-top:6px;"><strong>资产：</strong>${c.financial.assets.map(a => `<span class="tag tag-blue" style="margin:2px;">${a}</span>`).join(' ')}</div>
+          <div style="margin-top:6px;"><strong>负债：</strong>${c.financial.liabilities.map(l => `<span class="tag tag-red" style="margin:2px;">${l}</span>`).join(' ')}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADEQUACY 充足度 -->
+    ${adequacyPanelHTML(c)}
+
+    <!-- RECOMMENDATION + LIFE EVENTS + PROPOSAL (始终可见，顺序：候选池→事件确认→建议书) -->
+    <div id="decisionZone"></div>
+  `;
+  const planRecs = state.plans[c.id] ? state.plans[c.id].recs : []; // 只用当前客户自己的方案
+  renderDecisionZone(c, planRecs, state.plans[c.id] ? (state.plans[c.id].proposal || '') : '');
+}
+// 历史拜访：种子数据 + 运行时新增，按日期倒序
+function getVisits(c) {
+  const seed = VISIT_HISTORY[c.id] || [];
+  const runtime = c.visits || [];
+  return runtime.concat(seed).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+function showVisitHistory(clientId) {
+  const c = CLIENTS.find(x => x.id === clientId); if (!c) return;
+  const visits = getVisits(c);
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay show'; modal.style.zIndex = '1000';
+  modal.innerHTML = `<div class="modal" style="max-width:560px;">
+    <h3>📜 ${c.name} — 历史拜访记录（${visits.length} 次）</h3>
+    <div style="max-height:60vh;overflow-y:auto;">
+      ${visits.map(v => `<div class="visit-item"><div style="display:flex;justify-content:space-between;align-items:center;"><strong style="font-size:.85rem;">📅 ${v.date}</strong><span class="tag ${v.intent && v.intent.includes('高') ? 'tag-green' : v.intent && v.intent.includes('中') ? 'tag-amber' : 'tag-gray'}" style="font-size:.65rem;">${v.intent || ''}</span></div><div style="font-size:.83rem;color:var(--gray-700);margin-top:5px;">${v.summary}</div></div>`).join('') || '<p style="color:var(--gray-500);">暂无历史拜访记录</p>'}
+    </div>
+    <div style="text-align:right;margin-top:14px;"><button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">关闭</button></div>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+async function runRecommendation() {
+  const c = CLIENTS.find(x => x.id === state.selectedClientId);
+  if (!c) { showToast('请先选择客户'); return; }
+  buildClientPlan(c); // 初步推荐方案：纯按充足度缺口（生命事件通过下方勾选再追加）
+  state.currentGaps = computeGapAnalysis(c);
+  syncActivePlan(c);
+  state.proposalGenerated = false; state.lastProposal = ''; state.proposalStale = false;
+  if (state.activeTab !== 'client') switchTab('client');
+  renderClientDeep();
+  setTimeout(() => scrollToSection('secRec'), 200);
+}
+
+// 生命事件确认面板（默认不勾选；确认后保留勾选；无默认高亮底纹）
+function lifeEventsPanelHTML(c) {
+  const checked = (state.plans[c.id] && state.plans[c.id].checkedEvents) || [];
+  return `<div class="panel" style="margin-bottom:16px;">
+    <div class="panel-header">🔔 生命事件确认 <span class="tag tag-gray" style="margin-left:auto;">勾选 → 确认 → 追加到候选池</span></div>
+    <div class="panel-body">
+      <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:10px;">8 类预置生命事件，<strong>默认不勾选</strong>。请按客户实际情况勾选，点"确认"把对应的<strong>具体产品</strong>追加到上方候选池并标 🔔（若还没生成方案，会自动先生成初步方案再追加），再到候选池点"加入方案"纳入最终方案。</div>
+      <div id="lifeEventChecks" class="grid-2">
+      ${ALL_LIFE_EVENTS.map(le => {
+        const matched = c.lifeEvents.find(e => e.name === le.name);
+        const isChecked = checked.includes(le.name);
+        return `<label style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:6px;cursor:pointer;background:var(--gray-50);border:1px solid ${isChecked ? 'var(--blue)' : 'transparent'};">
+          <input type="checkbox" value="${le.name}" ${isChecked ? 'checked' : ''} style="width:16px;height:16px;flex-shrink:0;">
+          <span style="font-size:1.15rem;">${le.icon}</span>
+          <div style="flex:1;"><strong style="font-size:.82rem;">${le.name}</strong> ${matched ? `<span style="color:var(--gray-400);font-size:.66rem;">· 系统监测到 ${matched.date}</span>` : ''}<div style="font-size:.7rem;color:var(--gray-600);">${le.recommend}</div></div>
+        </label>`;
+      }).join('')}
+      </div>
+      <div style="text-align:right;margin-top:10px;">
+        <button class="btn btn-primary" onclick="addEventProducts('${c.id}')">✅ 确认，追加到候选池</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderDecisionZone(c, recs, proposal) {
+  const zone = document.getElementById('decisionZone');
+  if (!zone) return;
+  recs = recs || [];
+  const hasPlan = recs.length > 0;
+  const income = clientIncome(c);
+  const annualBudget = Math.round(income * 12 * 0.12);
+  // 候选池 = 全部推荐（缺口推荐 + 生命事件追加）；事件追加的置顶，方便看见
+  const ordered = recs.map((rec, idx) => ({ rec, idx })).sort((a, b) => (b.rec.eventTag ? 1 : 0) - (a.rec.eventTag ? 1 : 0));
+  const selectedCount = recs.filter(r => r.selected).length;
+
+  zone.innerHTML = `
+    <div class="panel" style="margin-bottom:16px;" id="secRec">
+      <div class="panel-header">🎯 AI 推荐候选池 <span class="tag tag-green">🗂️ 知识库检索</span>
+        ${hasPlan ? `<button class="btn" style="margin-left:auto;font-size:.72rem;padding:4px 10px;" onclick="if(confirm('重新生成将按缺口重建候选池，清空当前加入与生命事件追加，确定？'))runRecommendation()">🔄 重新生成</button>` : ''}
+      </div>
+      <div class="panel-body">
+        ${!hasPlan ? `<div style="text-align:center;padding:34px;color:var(--gray-500);">
+          <div style="font-size:2.2rem;margin-bottom:10px;">🎯</div>
+          <p style="font-size:.9rem;">第一步：点「生成推荐方案」得到按充足度缺口匹配的候选池。<br>（也可以先在下方勾选生命事件并确认，会自动生成并追加相关产品）</p>
+          <button class="btn btn-primary" style="margin-top:14px;" onclick="runRecommendation()">✨ 生成推荐方案</button>
+        </div>` : `
+        <div style="font-size:.8rem;color:var(--gray-700);margin-bottom:12px;background:var(--blue-bg);padding:9px 12px;border-radius:8px;">
+          🧮 <strong>这是候选池</strong>（按「保障充足度」缺口匹配的 AI 推荐）。只有点了 <strong>「加入方案」</strong>的产品才进入最终建议书和见面话术；没加入的只是备选。带 🔔 的是下方确认生命事件后追加的候选。 <span style="color:var(--blue);font-weight:700;">已加入 ${selectedCount} 个 → 最终方案。</span>
+        </div>
+        ${ordered.map(({ rec: r, idx: i }) => {
+          const isEvent = !!r.eventTag;
+          return `<div class="rec-card" style="${r.selected ? 'border-color:var(--green);border-width:2px;background:var(--green-bg);' : isEvent ? 'border-color:var(--amber);border-width:2px;background:#fffbeb;' : ''}">
+            ${r.selected ? '<div class="rec-badge">✓ 已加入最终方案</div>' : ''}
+            <div class="rec-score ${r.score >= 80 ? 'high' : 'medium'}">${r.score}</div>
+            <div class="rec-body">
+              <div class="rec-name">${r.product} <span class="tag tag-blue" style="font-size:.62rem;">${r.categoryLabel}</span> ${isEvent ? `<span class="tag tag-amber" style="font-size:.6rem;">🔔 ${r.eventTag}</span>` : ''} <span style="font-size:.68rem;color:var(--gray-400);">${r.productId}</span></div>
+              <div class="rec-summary">${r.summary}</div>
+              <div class="rec-loss">💥 风险量化：${r.riskLoss}</div>
+              <div class="rec-peers">👥 同类客户选择：${r.peers}</div>
+              <div class="rec-pitch">💬 ${r.talkTrack}</div>
+              <div style="font-size:.8rem;color:var(--gray-500);margin-top:5px;">💰 预估月保费：<b>${r.premium}</b> · 建议保额：${r.suggestedSumAssured}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+              <button class="btn ${r.selected ? 'btn-success' : 'btn-primary'}" style="font-size:.72rem;padding:6px 10px;" onclick="toggleSelect(${i})">${r.selected ? '✓ 已加入（点击移出）' : '➕ 加入方案'}</button>
+              <button class="btn" style="font-size:.72rem;padding:4px 10px;" onclick="adjustSumAssured(${i})">✏️ 调整保额</button>
+              ${(r.productId || '').startsWith('CUSTOM') ? `<button class="btn" style="font-size:.72rem;padding:4px 10px;color:#dc2626;" onclick="removeCustom(${i})">🗑 删除</button>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
+        <div style="margin-top:10px;padding:10px;background:var(--gray-50);border-radius:8px;border:1px dashed var(--gray-300);">
+          <button class="btn" style="font-size:.8rem;" onclick="addCustomProduct()">➕ 手工添加产品到候选池</button>
+          <span style="font-size:.74rem;color:var(--gray-500);margin-left:6px;">建议年保费预算 ${fmtRM(annualBudget)}（月收入12%）</span>
+        </div>`}
+      </div>
+    </div>
+
+    ${lifeEventsPanelHTML(c)}
+
+    <div class="panel" id="secProposal">
+      <div class="panel-header">📄 配置方案 / 建议书 <span class="tag tag-amber">✨ AI流式生成</span>
+        <div style="margin-left:auto;" class="view-toggle">
+          <button class="${state.planView === 'agent' ? 'active' : ''}" onclick="setPlanView('agent')">👔 代理人视图</button>
+          <button class="${state.planView === 'client' ? 'active' : ''}" onclick="setPlanView('client')">👀 客户视图</button>
+        </div>
+      </div>
+      <div class="panel-body" id="proposalBody">
+        ${state.planView === 'client' ? renderClientFacingPlan(c, recs) : renderAgentProposal(c, proposal)}
+      </div>
+    </div>
+
+    ${benchmarkPanelHTML(recs)}
+
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="openMeeting('${c.id}')">完成方案，进入见面辅助 →</button>
+    </div>
+  `;
+}
+
+function setPlanView(v) {
+  state.planView = v;
+  const body = document.getElementById('proposalBody');
+  const c = state.lastClientForRec;
+  // 重渲染整块，确保 toggle 高亮同步
+  renderDecisionZone(c, state.lastRecommendations, state.lastProposal);
+}
+
+function renderAgentProposal(c, proposal) {
+  const selN = (state.lastRecommendations || []).filter(r => r.selected).length;
+  return `
+    ${!state.proposalGenerated ? (selN === 0 ? `
+      <div style="text-align:center;padding:30px;background:var(--amber-bg);border-radius:10px;border:1px dashed #fcd34d;">
+        <div style="font-size:2rem;margin-bottom:8px;">📄</div>
+        <p style="font-size:.88rem;color:#92400e;margin-bottom:6px;">建议书基于"已加入"的产品。请先到上方候选池点「加入方案」选择产品。</p>
+        <button class="btn" onclick="scrollToSection('secRec')">↑ 回到候选池选择</button>
+      </div>` : `
+      <div style="text-align:center;padding:30px;background:var(--gray-50);border-radius:10px;border:2px dashed var(--gray-200);">
+        <div style="font-size:2rem;margin-bottom:8px;">📄</div>
+        <p style="font-size:.88rem;color:var(--gray-700);margin-bottom:6px;">将根据已加入的 <b>${selN}</b> 个产品生成个性化建议书（SSE 流式逐字输出）</p>
+        <button class="btn btn-primary" onclick="generateProposal()">✨ 一键生成建议书</button>
+      </div>`) : `
+      ${state.proposalStale ? '<div style="background:var(--amber-bg);border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:.85rem;margin-bottom:10px;"><strong>⚠️ 产品方案已更新</strong> — 建议重新生成建议书 <button class="btn btn-primary" style="font-size:.75rem;padding:3px 10px;margin-left:8px;" onclick="generateProposal()">✨ 重新生成</button></div>' : ''}
+      <div style="display:flex;gap:6px;margin-bottom:8px;justify-content:flex-end;">
+        <button class="btn" style="font-size:.72rem;padding:4px 10px;" onclick="exportPDF()">🖨️ 导出PDF</button>
+        <button class="btn" style="font-size:.72rem;padding:4px 10px;" onclick="openSendModal()">📤 转发客户</button>
+        <button class="btn" style="font-size:.72rem;padding:4px 10px;" onclick="generateProposal()">🔄 重新生成</button>
+      </div>
+      <div style="margin-bottom:10px;">
+        <h4 style="font-size:.88rem;margin-bottom:6px;">📋 方案明细（与候选池保额/保费完全一致）</h4>
+        <table class="compare-table">
+          <tr><th>产品</th><th>类别</th><th>保额</th><th>月保费</th></tr>
+          ${(state.lastRecommendations || []).filter(r => r.selected).map(r => `<tr><td>${r.product}${r.eventTag ? ' 🔔' : ''}</td><td>${r.categoryLabel}</td><td>${r.suggestedSumAssured}</td><td>${r.premium}</td></tr>`).join('')}
+        </table>
+        <div style="font-size:.72rem;color:var(--gray-500);margin-top:4px;">以上明细为准；下方为 AI 生成的文字版建议书（可编辑）。</div>
+      </div>
+      <textarea class="proposal-edit" id="proposalEdit">${proposal}</textarea>`}`;
+}
+
+// 一条推荐对应的充足度维度 key
+function recDimKey(r) {
+  if (r.category === 'life') return 'life';
+  if (r.category === 'health') return (r.productId || '').includes('CI') ? 'critical' : 'medical';
+  if (r.category === 'savings') return isEduSavings(r) ? 'savings' : 'pension';
+  return null;
+}
+// 同业对标数据（按维度），根据方案里的产品动态展示
+const BENCHMARK_ROWS = {
+  life: [ { dim: '定期寿险费率（每10万保额）', aia: '约 RM 8/月起', industry: 'RM 12-15/月' }, { dim: '保证可续保', aia: '是', industry: '部分' } ],
+  critical: [ { dim: '重疾理赔速度', aia: '24小时', industry: '3-5个工作日' }, { dim: '覆盖重疾种类', aia: '36种', industry: '约30种' }, { dim: '确诊即赔（非报销）', aia: '是', industry: '部分' } ],
+  medical: [ { dim: '医疗年度限额', aia: 'RM 150,000', industry: 'RM 80,000' }, { dim: '住院实报实销', aia: '是', industry: '多有日额上限' }, { dim: '无限次住院', aia: '是', industry: '否' } ],
+  savings: [ { dim: '教育金保证回报', aia: '3.8%-4.0%', industry: '2.5%-3%' }, { dim: '满期领取灵活度', aia: '分期/一次性', industry: '多为固定' } ],
+  pension: [ { dim: '年金保证+分红', aia: '有', industry: '多为纯保证、偏低' }, { dim: '月领灵活度', aia: '高', industry: '一般' } ],
+  accident: [ { dim: '意外伤残赔付', aia: 'RM 50K 起', industry: '相近' } ],
+  business: [ { dim: '关键人/业务延续保障', aia: '有专属方案', industry: '少见' } ]
+};
+const BENCHMARK_VITALITY = { dim: 'AIA Vitality 健康奖励', aia: '有（保费折扣+健康福利）', industry: '无' };
+function benchmarkRowsFor(recs) {
+  const dims = [...new Set((recs || []).map(recDimKey).filter(Boolean))];
+  let rows = [];
+  dims.forEach(k => (BENCHMARK_ROWS[k] || []).forEach(r => rows.push(r)));
+  if (!rows.length) rows = [...BENCHMARK_ROWS.critical, ...BENCHMARK_ROWS.medical]; // 无产品时给通用对标
+  rows.push(BENCHMARK_VITALITY);
+  return rows;
+}
+function benchmarkPanelHTML(recs) {
+  const sel = (recs || []).filter(r => r.selected);
+  const base = sel.length ? sel : (recs || []);
+  const rows = benchmarkRowsFor(base);
+  const cats = [...new Set(base.map(r => r.categoryLabel))].join('、') || '当前方案';
+  return `<div class="panel" style="margin-top:16px;" id="secBenchmark">
+      <div class="panel-header">📈 同业对标 <span class="tag tag-gray" style="margin-left:auto;">按${sel.length ? '已加入' : '候选'}产品匹配</span></div>
+      <div class="panel-body">
+        <div style="font-size:.78rem;color:var(--gray-500);margin-bottom:8px;">针对本方案的 <b>${cats}</b> 做同业对标：</div>
+        <table class="compare-table">
+          <tr><th>对比维度</th><th>AIA</th><th>行业均值</th></tr>
+          ${rows.map(r => `<tr><td>${r.dim}</td><td style="color:var(--green);font-weight:600;">${r.aia}</td><td style="color:var(--gray-500);">${r.industry}</td></tr>`).join('')}
+        </table>
+      </div>
+    </div>`;
+}
+// 客户视图：可直接递给客户看，大字体、图表、无后台信息
+function renderClientFacingPlan(c, recs) {
+  const showRecs = recs.filter(r => r.selected); // 客户视图只展示最终方案（已加入）
+  if (!showRecs.length) {
+    return `<div style="text-align:center;padding:30px;background:var(--gray-50);border-radius:10px;border:1px dashed var(--gray-300);">
+      <div style="font-size:2rem;margin-bottom:8px;">👀</div>
+      <p style="font-size:.9rem;color:var(--gray-700);">客户视图展示"已加入"的最终方案。请先到候选池点「加入方案」选择产品。</p>
+    </div>`;
+  }
+  // 缺口只展示"所选产品对应的维度"，并显示 当前→方案后，确保与下方产品对应
+  const dims = new Set(showRecs.map(recDimKey).filter(Boolean));
+  const adqAll = computeAdequacy(c, showRecs);
+  const adq = adqAll.filter(r => dims.has(r.key));
+  return `<div class="cv-wrap">
+    <div class="cv-title">
+      <h2>${c.name} 的专属保障方案</h2>
+      <p>AIA · 为您和家人量身定制 · ${TODAY.getFullYear()}年${TODAY.getMonth()+1}月</p>
+    </div>
+    <div class="cv-gap">
+      <h3>🛡️ 本方案为您补足的保障缺口</h3>
+      ${adq.map(r => { const gain = (r.projPct || r.pct) > r.pct; return `<div class="cv-bigbar">
+        <div class="cb-top"><span>${r.icon} ${r.name}</span><span style="color:${adqColor(r.projPct || r.pct)};">当前 ${r.pct}%${gain ? ` → 方案后 ${r.projPct}%` : ''}</span></div>
+        <div class="cb-track" style="position:relative;">
+          ${gain ? `<div class="cb-fill" style="position:absolute;inset:0 auto 0 0;width:${Math.max(r.projPct,8)}%;background:${adqColor(r.projPct)};opacity:.4;"></div>` : ''}
+          <div class="cb-fill" style="position:absolute;inset:0 auto 0 0;width:${Math.max(r.pct,8)}%;background:${adqColor(r.pct)};">${r.pct}%</div>
+        </div>
+        <div style="font-size:.82rem;color:#b45309;margin-top:7px;">${r.loss}</div>
+      </div>`; }).join('')}
+    </div>
+    ${showRecs.map(r => {
+      const sa = r.suggestedSumAssured;
+      const premNum = parseInt((r.premium.match(/\d[\d,]*/) || ['0'])[0].replace(/,/g, ''));
+      const perDay = premNum ? Math.max(1, Math.round(premNum / 30)) : null;
+      return `<div class="cv-prod">
+        <div class="cv-prod-head"><span class="cph-name">${r.product}</span><span class="cph-cat">${r.categoryLabel}</span></div>
+        <div class="cv-prod-body">
+          <div class="cv-spec">
+            <div class="cs-cell"><div class="cs-val">${sa}</div><div class="cs-lbl">保障额度</div></div>
+            <div class="cs-cell"><div class="cs-val">${r.premium}</div><div class="cs-lbl">每月保费</div></div>
+          </div>
+          <div class="cv-highlight">✨ <b>为什么需要：</b>${r.riskLoss}</div>
+          ${perDay ? `<div class="cv-perday">折算下来，每天只要 <b>RM ${perDay}</b></div>` : ''}
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="text-align:center;background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+      <div style="font-size:.9rem;color:var(--gray-700);">🏆 选择 AIA：重疾理赔最快 <b>24 小时</b> · 医疗年限额 <b>RM 150K</b> · 专属健康奖励 Vitality</div>
+    </div>
+    <p style="text-align:center;font-size:.72rem;color:var(--gray-400);margin-top:14px;">本方案仅供参考，具体保障以保单条款为准。</p>
+  </div>`;
+}
+
+// ─── 候选池：加入是可逆开关；删除只对手工添加的产品（与"加入"对等，池子不被破坏）──
+function markStale() { if (state.proposalGenerated) state.proposalStale = true; else { state.proposalGenerated = false; state.lastProposal = ''; } }
+function toggleSelect(idx) {
+  if (!state.lastRecommendations) return;
+  const r = state.lastRecommendations[idx]; if (!r) return;
+  r.selected = !r.selected; markStale();
+  persistPlan(state.lastClientForRec);
+  renderDecisionZone(state.lastClientForRec, state.lastRecommendations, state.lastProposal);
+  refreshAdequacy(state.lastClientForRec);
+  showToast(r.selected ? '✅ 已加入最终方案（建议书/话术/充足度已联动）' : '已移出最终方案');
+}
+function adjustSumAssured(idx) {
+  if (!state.lastRecommendations) return;
+  const r = state.lastRecommendations[idx]; if (!r) return;
+  const newVal = prompt('请输入新的保额（' + (r.category === 'savings' ? '满期可领取金额' : '保障额度') + '）：', r.suggestedSumAssured);
+  if (!newVal) return;
+  r.suggestedSumAssured = newVal;
+  const numVal = parseInt(newVal.replace(/[^0-9]/g, ''));
+  if (numVal) {
+    r.coverAmount = numVal; // 关键：保额→贡献保额，充足度投影随之联动（含教育金/储蓄）
+    // 保费仅对"保障型"按费率重算；储蓄/年金的保费不按保额×费率
+    if (['life', 'health', 'accident', 'business'].includes(r.category)) {
+      r.premium = 'RM ' + Math.round(numVal * 0.0015).toLocaleString() + '/月';
+    }
+  }
+  const c = state.lastClientForRec;
+  markStale();
+  persistPlan(c);
+  renderDecisionZone(c, state.lastRecommendations, state.lastProposal);
+  refreshAdequacy(c);
+  showToast(r.selected ? '保额已更新，最终方案与充足度已联动' : '保额已更新（点"加入方案"后联动充足度）');
+}
+// 仅删除手工添加的候选（AI 推荐与事件追加的不做破坏性删除，不加入即可）
+function removeCustom(idx) {
+  if (!state.lastRecommendations) return;
+  const r = state.lastRecommendations[idx];
+  if (!r || !(r.productId || '').startsWith('CUSTOM')) { showToast('只有手工添加的产品可删除；AI 推荐不加入即可'); return; }
+  state.lastRecommendations.splice(idx, 1);
+  state.activeProducts = state.lastRecommendations.map((_, i) => i);
+  markStale();
+  persistPlan(state.lastClientForRec);
+  renderDecisionZone(state.lastClientForRec, state.lastRecommendations, state.lastProposal);
+  refreshAdequacy(state.lastClientForRec);
+  showToast('已删除手工添加的产品');
+}
+function addCustomProduct() {
+  const name = prompt('请输入产品名称：'); if (!name) return;
+  const category = prompt('类别（life/health/savings/accident/business）：', 'health') || 'health';
+  const premium = prompt('月保费（如：RM 350/月）：', 'RM 350/月') || '请咨询';
+  const customRec = {
+    productId: 'CUSTOM-' + Date.now().toString(36).toUpperCase(), product: name, category,
+    categoryLabel: { life:'寿险', health:'健康险', savings:'储蓄险', accident:'意外险', business:'企业险' }[category] || '其他',
+    score: 70, summary: '手工添加的产品', talkTrack: name + ' 可以为您提供针对性保障。', clientMessage: 'Hi，推荐您了解一下 ' + name + '。',
+    riskLoss: '补足该缺口可提升家庭抗风险能力。', peers: '相似客户也会按需补充此类保障。',
+    premium, suggestedSumAssured: '根据需求定制', gap: { dimension:'补充保障', detail:'手工添加', risk:'提升完整性', gapPercent:60, severity:'medium' }, selected: false
+  };
+  state.lastRecommendations.push(customRec);
+  if (state.activeProducts) state.activeProducts.push(state.lastRecommendations.length - 1);
+  else state.activeProducts = state.lastRecommendations.map((_, i) => i);
+  markStale();
+  persistPlan(state.lastClientForRec);
+  renderDecisionZone(state.lastClientForRec, state.lastRecommendations, state.lastProposal);
+  showToast('已添加到候选池：' + name + '（点"加入方案"纳入最终方案）');
+}
+
+// ─── SSE 流式建议书生成（带进度提示 + 打字机 + 完成闪烁）──────
+async function generateProposal() {
+  const c = state.lastClientForRec; const recs = state.lastRecommendations;
+  if (!c || !recs) { showToast('请先生成推荐方案'); return; }
+  if (!recs.some(r => r.selected)) { showToast('请先在候选池点"加入方案"选择至少一个产品，再生成建议书'); return; }
+  const body = document.getElementById('proposalBody');
+  body.innerHTML = `
+    <div class="gen-steps">
+      <div class="gen-step active" id="gs-1"><span class="gs-ic">①</span> 正在分析客户画像...</div>
+      <div class="gen-step" id="gs-2"><span class="gs-ic">②</span> 正在匹配产品方案...</div>
+      <div class="gen-step" id="gs-3"><span class="gs-ic">③</span> 正在生成建议书...</div>
+    </div>
+    <div class="stream-area typing" id="proposalStream"></div>`;
+  const streamEl = document.getElementById('proposalStream');
+  streamEl.classList.add('cursor-blink');
+  const setStep = (n) => {
+    for (let i = 1; i <= 3; i++) { const el = document.getElementById('gs-' + i); if (!el) continue; el.classList.toggle('done', i < n); el.classList.toggle('active', i === n); }
+  };
+  await new Promise(r => setTimeout(r, 500)); setStep(2);
+  await new Promise(r => setTimeout(r, 500)); setStep(3);
+
+  const gaps = state.currentGaps || computeGapAnalysis(c);
+  const selectedRecs = recs.filter(r => r.selected); // 最终方案 = 已"加入"的产品
+  const evTags = [...new Set(selectedRecs.filter(r => r.eventTag).map(r => r.eventTag))];
+  let proposal = '';
+  try {
+    const systemPrompt = `你是一位专业的AIA保险代理人，擅长为客户撰写个性化保险配置建议书。要求：
+1. 专业但易懂的语言；2. 结合客户具体画像与保障缺口；3. 突出AIA产品与服务优势；
+4. 给出明确的下一步行动建议；5. 包含：客户现状、保障缺口、推荐方案（产品名称/保费/保额）、AIA优势、下一步；
+6. 不要使用markdown格式（#、**等），直接输出纯文本；
+7. 【非常重要】所有产品的保额、月保费必须与下方"已选择产品方案"中给出的数字【完全一致】，一字不改、不得自行估算或改写任何金额。`;
+    const userContent = `请为以下客户生成保险配置建议书：
+
+【客户信息】姓名：${c.name}，年龄：${c.age}岁，职业：${c.occupation}，家庭：${c.dependents}，月收入：${c.financial.incomeRange}，预算：${c.financial.budget}，人生阶段：${c.lifeStage}
+财务概况：${c.assetInfo}
+
+【当前已有保障】
+${c.coverageDetails.map(v => '- ' + v.type + '：' + v.coverage + '（' + v.insurer + '，到期' + v.expiryDate + '）').join('\n') || '暂无'}
+
+【保障充足度缺口】
+${computeAdequacy(c).map(r => '- ' + r.name + '：充足度' + r.pct + '%，' + r.loss).join('\n')}
+
+【推荐方案】
+${selectedRecs.map(r => '- ' + r.product + '（' + r.categoryLabel + '），月保费' + r.premium + '，保额' + r.suggestedSumAssured + '，' + r.riskLoss).join('\n')}
+
+${evTags.length ? '【生命事件关注】客户已勾选：' + evTags.join('、') + '，请在建议书中针对性强调相关保障。' : ''}`;
+    await callLLMStream(systemPrompt, userContent, (token) => {
+      proposal += token;
+      streamEl.classList.remove('cursor-blink');
+      streamEl.textContent = proposal;
+      streamEl.scrollTop = streamEl.scrollHeight;
+    }, 2048);
+    proposal = proposal.replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#{1,6}\s+/gm, '').trim();
+  } catch (e) {
+    console.warn('Proposal LLM failed, fallback:', e);
+    proposal = generateProposalFallback(c, selectedRecs);
+    streamEl.textContent = proposal;
+  }
+  streamEl.classList.remove('cursor-blink', 'typing');
+  streamEl.classList.add('done-flash');
+  state.lastProposal = proposal; state.proposalGenerated = true; state.proposalStale = false;
+  persistPlan(c); // 建议书写入该客户方案，切客户不丢、不串
+  showToast('✅ 建议书生成完成');
+  setTimeout(() => renderDecisionZone(c, recs, proposal), 950);
+}
+function generateProposalFallback(c, recs) {
+  const evTags = [...new Set((recs || []).filter(r => r.eventTag).map(r => r.eventTag))];
+  const ev = evTags.length ? '\n\n特别说明：已结合客户生命事件「' + evTags.join('、') + '」，建议重点关注相关保障。' : '';
+  return c.name + ' 专属保障配置建议\n\n一、客户现状\n您今年' + c.age + '岁，处于' + c.lifeStage + '，月收入' + c.financial.incomeRange + '，' + c.dependents + '。\n\n二、保障充足度缺口\n' + computeAdequacy(c).map(r => '- ' + r.name + '：充足度' + r.pct + '%，' + r.loss).join('\n') + '\n\n三、推荐方案\n' + recs.map((r, i) => (i+1) + '. ' + r.product + '（' + r.categoryLabel + '）月保费' + r.premium + '，保额' + r.suggestedSumAssured + '。' + r.riskLoss).join('\n') + '\n\n四、AIA服务优势\nAIA拥有东南亚最大保险网络，重疾理赔最快24小时，并提供Vitality健康奖励。\n\n五、下一步\n建议优先处理充足度最低的缺口，分阶段完善保障。' + ev;
+}
+
+// ─── OCR 保单解析 ───────────────────────────────────────────
+function triggerOCRUpload(clientId) {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = 'image/*';
+  input.onchange = () => { if (input.files && input.files[0]) simulateOCR(clientId, input.files[0].name); };
+  input.click();
+}
+function simulateOCR(clientId, fileName) {
+  const uploadArea = document.getElementById('ocrUploadArea');
+  const progressWrap = document.getElementById('ocrProgressWrap');
+  const progressFill = document.getElementById('ocrProgressFill');
+  const ocrStatus = document.getElementById('ocrStatus');
+  if (uploadArea) uploadArea.classList.add('processing');
+  if (progressWrap) progressWrap.classList.add('show');
+  if (ocrStatus) ocrStatus.textContent = '正在识别 ' + fileName + '...';
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 25 + 10; if (progress > 100) progress = 100;
+    if (progressFill) progressFill.style.width = progress + '%';
+    if (progress >= 100) { clearInterval(interval); setTimeout(() => completeOCR(clientId), 300); }
+  }, 350);
+}
+function completeOCR(clientId) {
+  const c = CLIENTS.find(x => x.id === clientId); if (!c) return;
+  const ocrResults = [
+    { type: '重疾险', coverage: 'RM 100,000', insurer: 'Prudential', expiryDate: '2035-12', source: 'OCR识别' },
+    { type: '个人意外险', coverage: 'RM 50,000', insurer: 'Great Eastern', expiryDate: '2028-06', source: 'OCR识别' }
+  ];
+  let added = 0;
+  ocrResults.forEach(item => { if (!c.coverageDetails.find(d => d.type === item.type)) { c.coverageDetails.push(item); added++; } });
+  c.coverageScores.critical = Math.min(100, c.coverageScores.critical + 40);
+  c.coverageScores.accident = Math.min(100, c.coverageScores.accident + 45);
+  renderClientDeep();
+  showToast('OCR完成：识别到 ' + added + ' 条新保障（' + ocrResults.map(r => r.type).join('、') + '），充足度已重算');
+}
+
+// ─── AI 实时话术 ───────────────────────────────────────────
+async function generateSpeech() {
+  const input = document.getElementById('speechInput').value.trim();
+  if (!input) { showToast('请输入客户说的话'); return; }
+  const c = CLIENTS.find(x => x.id === state.selectedClientId) || state.lastClientForRec;
+  const recs = state.lastRecommendations;
+  const resultEl = document.getElementById('speechResultContent');
+  resultEl.textContent = '';
+  document.getElementById('speechResult').style.display = 'block';
+  try {
+    const systemPrompt = `你是经验丰富的AIA保险代理人。面对客户异议，给出专业、有同理心、有说服力的回应。
+要求：1.引用客户实际情况（收入/家庭）；2.用类比或数据支撑；3.先承认顾虑再转向保障价值；4.100-200字；5.直接输出，不要前缀。`;
+    const userContent = `客户刚说："${input}"\n推荐产品：${recs ? recs.map(r => r.product).join('、') : '未指定'}\n客户：${c ? c.name + '，' + c.age + '岁，' + c.occupation + '，月收入' + c.financial.incomeRange : '未知'}`;
+    let response = '';
+    await callLLMStream(systemPrompt, userContent, (token) => { response += token; resultEl.textContent = response; }, 512);
+  } catch (e) {
+    resultEl.textContent = '我理解您的顾虑。以您的情况，这份保障每天只需一杯咖啡的钱，却能换来全家人的安心。我们一起看看怎么调到您最舒服的预算？';
+  }
+}
+
+// ─── AI 陪练 ────────────────────────────────────────────────
+function startRoleplay() {
+  const type = document.getElementById('roleplayType').value;
+  if (!type) { document.getElementById('roleplayArea').style.display = 'none'; return; }
+  state.roleplayRound = 0; state.roleplayMessages = [];
+  document.getElementById('roleplayArea').style.display = 'block';
+  document.getElementById('roleplayChat').innerHTML = '';
+  document.getElementById('coachingBox').style.display = 'none';
+  addRoleplayMsg('customer', ROLEPLAY_SCENARIOS[type][0]);
+}
+function addRoleplayMsg(role, text) {
+  state.roleplayMessages.push({ role, text });
+  const chat = document.getElementById('roleplayChat');
+  const div = document.createElement('div');
+  div.className = 'roleplay-msg ' + role;
+  div.innerHTML = `<div><div class="msg-label">${role === 'customer' ? '客户' : '代理人'}</div><div class="msg-bubble">${text}</div></div>`;
+  chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+}
+async function sendRoleplay() {
+  const input = document.getElementById('roleplayInput').value.trim(); if (!input) return;
+  addRoleplayMsg('agent', input);
+  document.getElementById('roleplayInput').value = '';
+  state.roleplayRound++;
+  const type = document.getElementById('roleplayType').value;
+  const thinkingDiv = document.createElement('div');
+  thinkingDiv.className = 'roleplay-msg customer';
+  thinkingDiv.innerHTML = '<div><div class="msg-label">客户</div><div class="msg-bubble" style="color:var(--gray-500);">正在思考...</div></div>';
+  document.getElementById('roleplayChat').appendChild(thinkingDiv);
+  try {
+    const systemPrompt = `你是一位正在考虑买保险的东南亚客户，异议类型"${type}"。要求：1.回应自然口语化；2.基于代理人回应给出合理反驳或追问；3.表现真实犹豫；4.1-2句话；5.直接输出，不要前缀。`;
+    const historyText = state.roleplayMessages.slice(-6).map(m => (m.role === 'customer' ? '客户' : '代理人') + '：' + m.text).join('\n');
+    const userContent = `对话历史：\n${historyText}\n\n代理人刚说："${input}"\n请以客户身份回应。`;
+    const bubble = thinkingDiv.querySelector('.msg-bubble');
+    let responseText = '';
+    await callLLMStream(systemPrompt, userContent, (token) => { responseText += token; bubble.style.color = ''; bubble.textContent = responseText; }, 256);
+    addRoleplayMsg('customer', responseText); thinkingDiv.remove();
+  } catch (e) {
+    thinkingDiv.remove();
+    const responses = ROLEPLAY_SCENARIOS[type];
+    addRoleplayMsg('customer', responses[Math.min(state.roleplayRound, responses.length - 1)] || '嗯，我再想想...');
+  }
+  if (state.roleplayRound % 3 === 0) {
+    const box = document.getElementById('coachingBox');
+    box.textContent = '💡 AI教练思考中...'; box.style.display = 'block';
+    try {
+      let t = '';
+      await callLLMStream('你是保险销售教练。给一句简短Coaching建议（30字内），帮代理人提升应对技巧。直接输出，不要前缀。', `代理人对"${type}"异议这样回应："${input}"`, (token) => { t += token; box.textContent = '💡 ' + t; }, 100);
+    } catch (e) {
+      box.textContent = '💡 试着用客户自己的数据（房贷、孩子年龄）来强化保障的必要性。';
+    }
+  }
+}
+
+// ─── 拜访记录 ───────────────────────────────────────────────
+function openVisitModal() {
+  document.getElementById('visitDate').value = TODAY_ISO;
+  document.getElementById('visitSummary').value = '';
+  document.getElementById('visitIntent').selectedIndex = 0;
+  document.getElementById('visitAnalysisResult').style.display = 'none';
+  document.getElementById('visitModal').classList.add('show');
+}
+async function analyzeVisit() {
+  const summary = document.getElementById('visitSummary').value.trim();
+  if (!summary) { showToast('请先填写拜访摘要'); return; }
+  const c = CLIENTS.find(x => x.id === state.selectedClientId) || { name: '未知客户', age: '', occupation: '', lifeStage: '' };
+  const el = document.getElementById('visitAnalysisResult'); el.style.display = 'block';
+  document.getElementById('vaLifeEvents').innerHTML = '<span style="color:var(--gray-500);">🤖 AI分析中...</span>';
+  document.getElementById('vaConcerns').innerHTML = ''; document.getElementById('vaSignals').innerHTML = ''; document.getElementById('vaHook').innerHTML = '';
+  try {
+    const systemPrompt = `你是保险代理人AI助手，分析拜访记录。严格按JSON输出（不要markdown代码块）：
+{"lifeEvents":["生命事件，无则空数组"],"concerns":["客户顾虑，无则空数组"],"signals":["购买信号，无则空数组"],"hook":"下次拜访切入点（一句话）"}`;
+    const userContent = `客户：${c.name}，${c.age}岁，${c.occupation}，阶段：${c.lifeStage}\n拜访摘要：${summary}`;
+    let result = '';
+    await callLLMStream(systemPrompt, userContent, (token) => { result += token; }, 512);
+    const a = JSON.parse(result.replace(/```json?\n?/g, '').replace(/```/g, '').trim());
+    document.getElementById('vaLifeEvents').innerHTML = (a.lifeEvents || []).length ? '<strong>🎉 生命事件：</strong>' + a.lifeEvents.join('、') : '';
+    document.getElementById('vaConcerns').innerHTML = (a.concerns || []).length ? '<strong>⚠️ 客户顾虑：</strong>' + a.concerns.join('、') : '';
+    document.getElementById('vaSignals').innerHTML = (a.signals || []).length ? '<strong>✅ 购买信号：</strong>' + a.signals.join('、') : '';
+    document.getElementById('vaHook').innerHTML = '<strong>💡 下次切入点：</strong>' + (a.hook || '继续跟进');
+  } catch (e) {
+    const r = {
+      lifeEvents: /孩子|baby|新生/.test(summary) ? ['新生儿'] : [],
+      concerns: /贵|budget|保费/.test(summary) ? ['对保费有顾虑'] : /比较|其他公司/.test(summary) ? ['想比较其他公司'] : [],
+      signals: /考虑|interested|有意/.test(summary) ? ['表现出购买意向'] : [],
+      hook: /孩子/.test(summary) ? '下次带教育金测算表' : /贵/.test(summary) ? '下次带3档预算方案对比' : '下次以新产品上市为由再联系'
+    };
+    document.getElementById('vaLifeEvents').innerHTML = r.lifeEvents.length ? '<strong>🎉 生命事件：</strong>' + r.lifeEvents.join('、') : '';
+    document.getElementById('vaConcerns').innerHTML = r.concerns.length ? '<strong>⚠️ 客户顾虑：</strong>' + r.concerns.join('、') : '';
+    document.getElementById('vaSignals').innerHTML = r.signals.length ? '<strong>✅ 购买信号：</strong>' + r.signals.join('、') : '';
+    document.getElementById('vaHook').innerHTML = '<strong>💡 下次切入点：</strong>' + r.hook;
+  }
+}
+function saveVisit() {
+  const c = CLIENTS.find(x => x.id === state.selectedClientId);
+  if (c) {
+    c.healthScore.lastContact = 0;
+    const summary = (document.getElementById('visitSummary').value || '').trim();
+    const date = document.getElementById('visitDate').value || TODAY_ISO;
+    const intent = document.getElementById('visitIntent').value;
+    if (summary) { c.visits = c.visits || []; c.visits.push({ date, summary, intent }); }
+  }
+  closeModal('visitModal');
+  showToast('拜访记录已保存，已写入历史 · 关系活跃度已刷新');
+  if (state.activeTab === 'home') renderHome();
+  if (state.activeTab === 'prep') renderPrep();      // 备课卡页历史列表立即刷新
+  if (state.activeTab === 'client') renderClientDeep();
+}
+
+// ─── 发送 / 渠道 ───────────────────────────────────────────
+function openSendModal() {
+  if (!state.lastRecommendations || !state.lastRecommendations[0]) { showToast('请先生成推荐方案'); return; }
+  updateChannelContent(state.lastClientForRec, state.lastRecommendations[0]);
+  document.getElementById('sendModal').classList.add('show');
+}
+function updateChannelContent(c, product) {
+  const msgs = {
+    whatsapp: buildWhatsApp(c, PRODUCT_KB.find(p => p.id === product.productId) || { name: product.product, maturityBenefit: '' }, product.category),
+    wechat: `您好${c.name}，根据我们之前的沟通，我为您推荐了 AIA ${product.product}。\n这款产品针对您目前的情况量身定制：${product.summary}。\n月保费约 ${product.premium}，折算下来每天不多。有任何问题欢迎随时找我 😊`,
+    email: `Subject: 您的专属保险配置建议 - AIA ${product.product}\n\n尊敬的${c.name}：\n\n感谢您的时间。根据您的家庭情况和保障需求，为您定制以下建议：\n\n推荐产品：AIA ${product.product}\n${product.summary}\n预估月保费：${product.premium}\n建议保额：${product.suggestedSumAssured}\n\n如有疑问请随时回复。\n\nAIA保险代理人 ${AGENT_NAME}`
+  };
+  document.getElementById('sendMessage').value = msgs[state.activeChannel];
+}
+function switchChannel(ch) {
+  state.activeChannel = ch;
+  document.querySelectorAll('.channel-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ch-' + ch.substring(0, 2)).classList.add('active');
+  if (state.lastRecommendations && state.lastClientForRec) updateChannelContent(state.lastClientForRec, state.lastRecommendations[0]);
+}
+function simulateSend() {
+  const names = { whatsapp: 'WhatsApp', wechat: '微信/Line', email: '邮件' };
+  closeModal('sendModal');
+  showToast('已通过 ' + names[state.activeChannel] + ' 发送（Demo模拟）');
+}
+function copySendContent() {
+  const text = document.getElementById('sendMessage').value;
+  navigator.clipboard.writeText(text).then(() => showToast('已复制')).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制');
+  });
+}
+function exportPDF() {
+  if (!state.lastProposal) { showToast('请先生成建议书'); return; }
+  const c = state.lastClientForRec; const recs = state.lastRecommendations;
+  const adq = computeAdequacy(c);
+  let printArea = document.getElementById('print-area');
+  if (!printArea) { printArea = document.createElement('div'); printArea.id = 'print-area'; printArea.style.cssText = 'display:none;'; document.body.appendChild(printArea); }
+  printArea.innerHTML = `<div style="padding:40px;font-family:'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.8;max-width:700px;margin:0 auto;">
+    <h1 style="text-align:center;color:#1a56db;margin-bottom:8px;">AIA 保险配置建议书</h1>
+    <p style="text-align:center;color:#6b7280;font-size:.9rem;margin-bottom:24px;">客户：${c.name} · ${c.age}岁 · 生成日期：${TODAY_ISO}</p>
+    <div style="border-bottom:2px solid #e5e7eb;margin-bottom:20px;"></div>
+    <div style="white-space:pre-wrap;font-size:.9rem;color:#374151;">${state.lastProposal.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    <div style="border-top:1px solid #e5e7eb;margin-top:20px;padding-top:16px;"><h3 style="color:#1a56db;">保障充足度</h3>${adq.map(r => '<p style="margin:6px 0;">• ' + r.name + '：充足度' + r.pct + '%</p>').join('')}</div>
+    ${recs && recs.filter(r=>r.selected).length ? '<div style="border-top:1px solid #e5e7eb;margin-top:20px;padding-top:16px;"><h3 style="color:#1a56db;">推荐产品明细</h3>' + recs.filter(r=>r.selected).map(r => '<p style="margin:6px 0;">• ' + r.product + '（' + r.categoryLabel + '）月保费' + r.premium + '，保额' + r.suggestedSumAssured + '</p>').join('') + '</div>' : ''}
+    <div style="border-top:1px solid #e5e7eb;margin-top:20px;padding-top:16px;text-align:center;color:#9ca3af;font-size:.8rem;">本建议书由AIA保险代理人智能工作台生成，仅供参考。具体保障以保单条款为准。</div>
+  </div>`;
+  printArea.style.display = 'block'; window.print(); printArea.style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 业绩管理
+// ═══════════════════════════════════════════════════════════════
+// 月/季/年目标达成（演示数据）
+const GOALS = {
+  month: { label: '月度（6月）', fypActual: 18400, fypTarget: 25000, caseActual: 7, caseTarget: 10 },
+  quarter: { label: '季度（Q2）', fypActual: 52000, fypTarget: 75000, caseActual: 19, caseTarget: 30 },
+  year: { label: '年度（2026）', fypActual: 196000, fypTarget: 300000, caseActual: 71, caseTarget: 120 }
+};
+function goalRow(g) {
+  const pct = Math.round(g.fypActual / g.fypTarget * 100);
+  const col = pct >= 90 ? 'var(--green)' : pct >= 70 ? 'var(--blue)' : 'var(--amber)';
+  return `<div style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:5px;"><strong>${g.label}</strong><span style="color:${col};font-weight:700;">${pct}%</span></div>
+    <div class="kpi-track" style="height:20px;"><div class="kpi-fill" style="width:${pct}%;background:${col};">${fmtRM(g.fypActual)}</div></div>
+    <div style="font-size:.74rem;color:var(--gray-500);margin-top:4px;">FYP 目标 ${fmtRM(g.fypTarget)} · 成交 ${g.caseActual}/${g.caseTarget} 件 · 还差 ${fmtRM(Math.max(0, g.fypTarget - g.fypActual))}</div>
+  </div>`;
+}
+function initPerfTab() {
+  const renewRate = 86, renewTarget = 90;
+  const riskClients = CLIENTS.filter(c => c.healthScore.renewalWillingness < 75).sort((a, b) => a.healthScore.renewalWillingness - b.healthScore.renewalWillingness).slice(0, 3);
+
+  document.getElementById('tab-perf').innerHTML = `
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-header">🎯 目标达成（月度 / 季度 / 年度）</div>
+      <div class="panel-body">
+        <div class="grid-3">
+          <div style="padding:0 6px;">${goalRow(GOALS.month)}</div>
+          <div style="padding:0 6px;">${goalRow(GOALS.quarter)}</div>
+          <div style="padding:0 6px;">${goalRow(GOALS.year)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px;">
+      <div class="panel metric-card"><div class="value" style="color:var(--blue);">RM 18,400</div><div class="label">本月新增保费(FYP)</div></div>
+      <div class="panel metric-card"><div class="value" style="color:var(--green);">RM 6,200</div><div class="label">本月续保保费</div></div>
+      <div class="panel metric-card"><div class="value">7件</div><div class="label">本月成交件数</div></div>
+      <div class="panel metric-card"><div class="value" style="color:var(--amber);">73%</div><div class="label">月度目标完成率</div></div>
+    </div>
+    ${renewRate < renewTarget ? `<div class="renew-alert"><strong>⚠️ 续保率预警</strong><div style="margin-top:6px;">当月续保率 ${renewRate}%，低于目标 ${renewTarget}%。以下客户流失风险较高：</div>
+      <div style="margin-top:8px;">${riskClients.map(c => `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><strong>${c.name}</strong><span style="font-size:.75rem;color:var(--gray-500);">上次联系${c.healthScore.lastContact}天前 · 到期 ${c.renewalDate}</span><button class="btn" style="font-size:.7rem;padding:2px 8px;" onclick="openPrep('${c.id}')">跟进</button></div>`).join('')}</div></div>` : ''}
+
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-header">📈 KPI详情 & 行动建议</div>
+      <div class="panel-body">
+        <div class="kpi-row" onclick="showKPIDetail('新增保费')"><div class="kpi-label">新增保费</div><div class="kpi-track"><div class="kpi-fill" style="width:73%;background:var(--amber);">RM 18,400</div></div><div class="kpi-val">目标 RM 25,000</div></div>
+        <div class="kpi-row" onclick="showKPIDetail('成交件数')"><div class="kpi-label">成交件数</div><div class="kpi-track"><div class="kpi-fill" style="width:70%;background:var(--green);">7件</div></div><div class="kpi-val">目标 10件</div></div>
+        <div class="kpi-row" onclick="showKPIDetail('客户拜访')"><div class="kpi-label">客户拜访</div><div class="kpi-track"><div class="kpi-fill" style="width:85%;background:var(--blue);">17次</div></div><div class="kpi-val">目标 20次</div></div>
+        <div class="kpi-row" onclick="showKPIDetail('续保')"><div class="kpi-label">续保率</div><div class="kpi-track"><div class="kpi-fill" style="width:86%;background:var(--amber);">86%</div></div><div class="kpi-val">目标 90%</div></div>
+        <div style="background:var(--amber-bg);padding:14px;border-radius:8px;margin-top:14px;font-size:.85rem;"><strong>⚠️ 行动建议：</strong> 新增保费落后 RM 6,600。优先跟进：① <strong>Tan Wei Ming</strong>（医疗续期+年金）② <strong>Budi Hartono</strong>（重疾，预计RM 2,800）③ <strong>Maria Santos</strong>（医疗续期+重疾）</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">📊 Pipeline 客户池管理 <span style="margin-left:auto;font-size:.75rem;color:var(--gray-500);">共 ${PIPELINE.reduce((s, st) => s + st.leads.length, 0)} 位（含 4 位在管客户 + 总部线索 + 转介绍）</span></div>
+      <div class="panel-body"><div class="grid-4" id="pipelineStages">${PIPELINE.map((s, si) => `<div class="pipeline-stage"><h4>${s.stage} (${s.leads.length})</h4>${s.leads.map((l, li) => `<div class="lead-card" onclick="showLeadDetail(${si},${li})"><div class="lead-name">${l.name} ${l.clientId ? '<span class="tag tag-blue" style="font-size:.55rem;">在管</span>' : ''}</div><div class="lead-meta"><span class="tag tag-${l.score === '高' ? 'green' : l.score === '中' ? 'amber' : 'red'}" style="font-size:.62rem;">${l.score}意向</span> ${l.source} · ${fmtRM(l.value)}</div><div style="font-size:.7rem;color:var(--gray-500);margin-top:2px;">${l.reason}</div></div>`).join('')}</div>`).join('')}</div></div>
+    </div>
+  `;
+}
+function showLeadDetail(si, li) {
+  const lead = PIPELINE[si].leads[li]; if (!lead) return;
+  document.getElementById('leadDetailTitle').textContent = `📋 ${lead.name} — 线索详情`;
+  const history = (lead.history || []).map(h => { const p = h.split(' '); return `<div style="background:var(--gray-50);padding:10px 12px;border-radius:6px;margin-bottom:6px;font-size:.82rem;"><strong>${p[0]}</strong> ${p.slice(1).join(' ')}</div>`; }).join('') || '<p style="font-size:.82rem;color:var(--gray-500);">暂无记录</p>';
+  document.getElementById('leadDetailContent').innerHTML = `
+    <div style="margin-bottom:16px;"><h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:8px;">基本信息</h4>
+      <div style="font-size:.85rem;"><div><strong>来源：</strong>${lead.source}</div><div><strong>预计保费：</strong>${fmtRM(lead.value)}</div><div><strong>意向：</strong><span class="tag tag-${lead.score === '高' ? 'green' : lead.score === '中' ? 'amber' : 'red'}">${lead.score}</span></div><div><strong>理由：</strong>${lead.reason}</div></div></div>
+    <div style="margin-bottom:16px;"><h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:8px;">当前阶段</h4><div style="font-size:.85rem;padding:10px 12px;background:var(--blue-bg);border-radius:6px;">${PIPELINE[si].stage}</div></div>
+    <div style="margin-bottom:16px;"><h4 style="font-size:.85rem;color:var(--gray-500);margin-bottom:8px;">历史跟进</h4>${history}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      ${lead.clientId ? `<button class="btn btn-primary" style="font-size:.8rem;" onclick="closeModal('leadDetailModal');openPrep('${lead.clientId}')">📇 打开备课卡</button>` : ''}
+      <button class="btn ${lead.clientId ? '' : 'btn-primary'}" style="font-size:.8rem;" onclick="closeModal('leadDetailModal');scheduleFollowupFromLead(${si},${li})">📅 安排跟进</button>
+    </div>`;
+  document.getElementById('leadDetailModal').classList.add('show');
+}
+// 用 si/li 取线索再安排，避免把名字/理由拼进 onclick 属性导致引号截断
+function scheduleFollowupFromLead(si, li) {
+  const lead = PIPELINE[si] && PIPELINE[si].leads[li];
+  if (!lead) return;
+  scheduleFollowup(lead.name, lead.clientId || null, lead.reason || '跟进');
+}
+// 安排跟进：弹日期选择，到了那天自动出现在「今日预约拜访」
+function scheduleFollowup(name, clientId, purpose) {
+  const dToday = TODAY_ISO, dTom = isoOffset(1), d3 = isoOffset(3);
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay show'; modal.style.zIndex = '1200';
+  modal.innerHTML = `<div class="modal" style="max-width:420px;">
+    <h3>📅 安排跟进 — ${name}</h3>
+    <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:10px;">选择跟进日期（演示"今天"= ${TODAY_ISO}）。到了那天，TA 会自动出现在「今日」首页的预约拜访里。</p>
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" type="button" style="font-size:.8rem;" onclick="document.getElementById('schedDate').value='${dToday}'">今天</button>
+      <button class="btn" type="button" style="font-size:.8rem;" onclick="document.getElementById('schedDate').value='${dTom}'">明天</button>
+      <button class="btn" type="button" style="font-size:.8rem;" onclick="document.getElementById('schedDate').value='${d3}'">3天后</button>
+    </div>
+    <label style="font-size:.85rem;font-weight:600;">或自定义日期</label>
+    <input type="date" id="schedDate" value="${dToday}" min="${TODAY_ISO}" style="width:100%;padding:9px;border:1px solid var(--gray-200);border-radius:6px;margin:4px 0 10px;">
+    <label style="font-size:.85rem;font-weight:600;">跟进事项</label>
+    <input type="text" id="schedPurpose" value="${(purpose || '跟进').replace(/"/g, '&quot;')}" style="width:100%;padding:9px;border:1px solid var(--gray-200);border-radius:6px;margin:4px 0 14px;">
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <button class="btn" onclick="this.closest('.modal-overlay').remove()">取消</button>
+      <button class="btn btn-primary" id="schedConfirm">✅ 确认安排</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  modal.querySelector('#schedConfirm').onclick = () => {
+    const date = modal.querySelector('#schedDate').value;
+    const purp = modal.querySelector('#schedPurpose').value || '跟进';
+    if (!date) { showToast('请选择日期'); return; }
+    if (clientId) {
+      const c = CLIENTS.find(x => x.id === clientId);
+      if (c) c.nextMeeting = { date, time: '待定', place: '电话/拜访跟进', purpose: purp };
+    } else {
+      state.scheduled.push({ name, clientId: null, date, time: '待定', place: '电话/拜访跟进', purpose: purp });
+    }
+    modal.remove();
+    const isToday = date === TODAY_ISO;
+    const dObj = new Date(date);
+    showToast(isToday ? `已安排${name}今天跟进，已出现在「今日」首页` : `已安排 ${dObj.getMonth() + 1}月${dObj.getDate()}日 跟进 ${name}，到那天会自动出现在首页`);
+    if (state.activeTab === 'home') renderHome();
+    if (state.activeTab === 'perf') initPerfTab();
+  };
+}
+function showKPIDetail(metric) {
+  const details = {
+    '新增保费': { actual: 'RM 18,400', target: 'RM 25,000', gap: 'RM 6,600', action: '优先跟进 Budi（RM 2,800）、Tan（年金）、Maria（重疾）', trend: '↑ 本周新增RM 3,200' },
+    '成交件数': { actual: '7件', target: '10件', gap: '3件', action: '本周2个客户进入核保，预计下周一出单', trend: '→ 持平' },
+    '客户拜访': { actual: '17次', target: '20次', gap: '3次', action: 'Siti 今天10:30、Budi 今天15:00、Tan 明天10:00', trend: '↑ 上周15次' },
+    '续保': { actual: '86%', target: '90%', gap: '4%', action: '3个客户续保意愿<75%，本周完成续保沟通', trend: '↓ 上月91%' }
+  };
+  const d = details[metric]; if (!d) return;
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay show'; modal.style.zIndex = '1000';
+  modal.innerHTML = `<div class="modal" style="max-width:480px;"><h3>📈 ${metric} 详情</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;">
+      <div style="background:var(--gray-50);padding:12px;border-radius:8px;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:var(--blue);">${d.actual}</div><div style="font-size:.8rem;color:var(--gray-500);">当前</div></div>
+      <div style="background:var(--gray-50);padding:12px;border-radius:8px;text-align:center;"><div style="font-size:1.3rem;font-weight:700;">${d.target}</div><div style="font-size:.8rem;color:var(--gray-500);">目标</div></div></div>
+    <div style="font-size:.85rem;margin-bottom:8px;"><strong>差距：</strong>${d.gap}</div>
+    <div style="font-size:.85rem;margin-bottom:8px;"><strong>趋势：</strong><span style="color:var(--green);">${d.trend}</span></div>
+    <div style="background:var(--blue-bg);padding:12px;border-radius:8px;font-size:.85rem;"><strong>💡 行动建议：</strong>${d.action}</div>
+    <div style="text-align:right;margin-top:16px;"><button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">关闭</button></div></div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+}
+
+// ─── UTILS ──────────────────────────────────────────────────
+function scrollToSection(id) { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+
+// ─── INIT ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderHome();
+  renderClientList();
+  const st = document.getElementById('aiServerStatus');
+  st.innerHTML = 'AI: 智谱 GLM-4-Flash（前端直连）✅'; st.style.color = '#86efac';
+});
+</script>
+</body>
+</html>
+
